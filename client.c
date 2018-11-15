@@ -8,19 +8,19 @@
 #define BUFSIZE 1024
 
 int main(void) {
-    // Create
+    // Create file descriptor
     int fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd == -1) {
         perror("Socket error");
         exit(-1);
     }
     
-    // Connect
+    // Connect to server
     struct sockaddr_in c_addr;
     bzero(&c_addr, sizeof(c_addr));
     c_addr.sin_family = AF_INET;
-    c_addr.sin_port = htons(8081);
-    inet_pton(AF_INET, "127.0.0.1", &c_addr.sin_addr.s_addr);
+    c_addr.sin_port = htons(8081); // Modify server port here
+    inet_pton(AF_INET, "127.0.0.1", &c_addr.sin_addr.s_addr); // Modify server address here
     
     int ret = connect(fd, (struct sockaddr*)&c_addr, sizeof(c_addr));
     if (ret == -1) {
@@ -37,7 +37,7 @@ int main(void) {
             write(fd, "exit", 4);
             break;
         }
-        write(fd, buf, strlen(buf));
+        write(fd, buf, strlen(buf)); // Send data to server
         
         // Receive message
         int len = read(fd, buf, sizeof(buf));

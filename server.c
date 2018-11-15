@@ -16,8 +16,8 @@ void *client_thread(void *arg) {
     
     while (1) {
         // Read data
-        memset(buf, 0, sizeof(buf)); // Initialize
-        read(cfd, buf, sizeof(buf));
+        memset(buf, 0, sizeof(buf)); // Initialize data string
+        read(cfd, buf, sizeof(buf)); // Read data received
         if (strcmp(buf, "exit") == 0)
             break;
         printf("Msg: %s\n", buf);
