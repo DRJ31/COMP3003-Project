@@ -39,8 +39,6 @@ void http_handler(int cfd) {
     get_gmt_time(timebuf);
     sprintf(http_response, http_header, timebuf, html);
     ssize_t ret = write(cfd, http_response, strlen(http_response));
-    if (ret > 0)
-        return;
 }
 
 void *client_thread(void *arg) {
