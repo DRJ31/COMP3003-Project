@@ -5,3 +5,7 @@
 # Files
 .DS_Store
 *.out
+
+# Misc
+*.o
+*~
