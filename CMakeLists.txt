@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.12)
+project(COMP3003-Project)
+set(CMAKE_C_COMPILER gcc)
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_FLAGS "-Wall -Wextra -pedantic -Wno-unused-parameter -rdynamic")
+include_directories (${GTK3_INCLUDE_DIRS})
+
+link_directories (${GTK3_LIBRARY_DIRS})
+set(SOURCE_FILES tests/gui/gui.c)
+add_executable(pb-gui-test ${SOURCE_FILES})
+add_definitions (${GTK3_CFLAGS_OTHER})
+target_link_libraries (pb-gui-test ${GTK3_LIBRARIES})

@@ -1,6 +1,7 @@
 # Directories
 .idea/
 .vscode/
+cmake-build-debug/
 
 # Files
 .DS_Store
