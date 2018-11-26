@@ -4,11 +4,11 @@ LD = gcc
 ifdef RELEASE
 CFLAGS   = -O2 -fstack-protector-all -flto -pipe -std=c99 -Wall -Wextra -pedantic
 CPPFLAGS = -DNDEBUG -D_FORTIFY_SOURCE=2
-LDFLAGS  = -fuse-linker-plugin -Wl,-O1,-z,defs,-z,relro,-z,now -flto
+LDFLAGS  = -rdynamic -fuse-linker-plugin -Wl,-O1,-z,defs,-z,relro,-z,now -flto
 else
 CFLAGS   = -g -std=c99 -Wall -Wextra -pedantic
 CPPFLAGS =
-LDFLAGS  =
+LDFLAGS  = -rdynamic
 endif
 
 CFLAGS  += $(shell pkg-config --cflags gtk+-3.0)
