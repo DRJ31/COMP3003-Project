@@ -3,33 +3,45 @@
 // Callback functions for GTK widget connected signals
 // See the GTK builder UI definition for information
 
-void cb_togglebtn_popover_main_toggled(GtkToggleButton *self, gpointer data)
+void cb_btn_func_left_clicked(GtkButton *self, gpointer data)
 {
-  gtk_popover_popup(GTK_POPOVER(data));
-}
+  const char *curr_stack = gtk_stack_get_visible_child_name(GTK_STACK(data));
 
-void cb_popover_main_closed(GtkPopover *self, gpointer data)
-{
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(data), FALSE);
-}
+  // If currently:
+  // - On the search page
+  //   - If the user is not logged in, this button is hidden
+  //   - If the user is logged in, clicking this button goes to the add page
+  // - On the other pages, clicking this button goes back to the search page
 
-void cb_togglebtn_search_toggled(GtkToggleButton *self, gpointer data)
-{
-  gboolean is_on = gtk_toggle_button_get_active(self);
-  gboolean is_searching = gtk_search_bar_get_search_mode(GTK_SEARCH_BAR(data));
+  if (strcmp("stackpage_label_main", curr_stack) == 0) {
+    //
+  } else if (strcmp("stackpage_result", curr_stack) == 0
+          || strcmp("stackpage_editor", curr_stack) == 0
+          || strcmp("stackpage_about", curr_stack) == 0)
+  {
+    if (FALSE) { // TODO: STUB: User status query
 
-  if (is_on) {
-    if (!is_searching)
-      gtk_search_bar_set_search_mode(GTK_SEARCH_BAR(data), TRUE);
+    } else {
+
+    }
   } else {
-    if (is_searching)
-      gtk_search_bar_set_search_mode(GTK_SEARCH_BAR(data), FALSE);
+    // Something happened
   }
 }
 
-void cb_searchentry_stop_search(GtkSearchEntry *self, gpointer data)
+void cb_btn_func_left_clicked(GtkButton *self, gpointer data)
 {
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(data), FALSE);
+  // TODO: STUB
+}
+
+void cb_btn_func_right_clicked(GtkButton *self, gpointer data)
+{
+  // TODO: STUB
+}
+
+void cb_btn_login_clicked(GtkButton *self, gpointer data)
+{
+  // TODO: STUB
 }
 
 void cb_btn_about_clicked(GtkButton *self, gpointer data)
@@ -56,6 +68,11 @@ void cb_btn_about_clicked(GtkButton *self, gpointer data)
   gtk_about_dialog_set_authors(about, authors);
 
   gtk_widget_show(GTK_WIDGET(about));
+}
+
+void cb_searchentry_main_activate(GtkSearchEntry *self, gpointer data)
+{
+  // TODO: STUB
 }
 
 void cb_winmain_destroy(GtkApplicationWindow *self, gpointer data)
