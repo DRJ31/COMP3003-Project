@@ -14,7 +14,7 @@ endif
 CFLAGS  += $(shell pkg-config --cflags gtk+-3.0)
 LDFLAGS += $(shell pkg-config --libs gtk+-3.0)
 
-OBJS = main.o
+OBJS = main.o gui.o
 
 .PHONY: all clean
 
@@ -25,7 +25,7 @@ clean:
 	rm -f $(NAME)
 
 $(NAME): $(OBJS)
-	$(LD) $(LDFLAGS) -o $@ $<
+	$(LD) $(LDFLAGS) -o $@ $^
 
 %.o: %.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
