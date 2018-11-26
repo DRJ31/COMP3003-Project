@@ -1,8 +1,8 @@
-#include <stdio.h>
+#include "gui.h"
 
 int main(int argc, char **argv)
 {
-  puts("Hello world!");
+  gui_start(&argc, &argv);
 
   return 0;
 }
