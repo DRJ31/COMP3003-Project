@@ -10,3 +10,7 @@ cmake-build-debug/
 # Misc
 *.o
 *~
+
+# Binary
+pb
+pb-gui-test
