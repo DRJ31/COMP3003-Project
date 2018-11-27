@@ -29,11 +29,6 @@ void cb_btn_func_left_clicked(GtkButton *self, gpointer data)
   }
 }
 
-void cb_btn_func_left_clicked(GtkButton *self, gpointer data)
-{
-  // TODO: STUB
-}
-
 void cb_btn_func_right_clicked(GtkButton *self, gpointer data)
 {
   // TODO: STUB
