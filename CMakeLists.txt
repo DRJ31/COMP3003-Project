@@ -1,4 +1,16 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.12)
 project(COMP3003-Project)
+set(CMAKE_C_COMPILER gcc)
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_FLAGS "-Wall -Wextra -pedantic -rdynamic -lmysqlclient")
 
-add_custom_target(pb COMMAND make)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
+include_directories (${GTK3_INCLUDE_DIRS})
+include_directories(/usr/include/mysql)
+link_directories (${GTK3_LIBRARY_DIRS})
+set(SOURCE_FILES src/main.c src/gui.c)
+add_executable(pb ${SOURCE_FILES})
+target_link_libraries (pb ${GTK3_LIBRARIES})
+
+add_executable(data src/data.c)
