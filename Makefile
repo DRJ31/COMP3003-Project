@@ -4,7 +4,7 @@ TESTDIR = tests
 export NAME    = pb
 export DESTDIR =
 
-.PHONY: all clean tests
+.PHONY: all clean tests $(SRCDIR)
 
 all: $(NAME)
 
@@ -14,9 +14,13 @@ clean:
 	done
 	rm -f $(NAME)
 
-tests:
-	$(MAKE) -C $(TESTDIR)
+tests: $(TESTDIR)
 
-$(NAME):
-	$(MAKE) -C $(SRCDIR)
+$(NAME): $(SRCDIR)
 	cp $(SRCDIR)/$(NAME) .
+
+$(SRCDIR):
+	$(MAKE) -C $@
+
+$(TESTDIR):
+	$(MAKE) -C $@
