@@ -1,5 +1,5 @@
 CC = gcc
-LD = gcc
+LD = $(CC)
 
 GTK_PKGCONF_CFLAGS = $(shell pkg-config --cflags gtk+-3.0)
 GTK_PKGCONF_LDFLAGS = $(shell pkg-config --libs gtk+-3.0)

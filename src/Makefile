@@ -1,5 +1,5 @@
 CC = gcc
-LD = gcc
+LD = $(CC)
 
 ifdef RELEASE
 CFLAGS   = -O2 -fstack-protector-all -flto -pipe -std=c99 -Wall -Wextra -pedantic
