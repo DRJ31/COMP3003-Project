@@ -8,4 +8,12 @@ typedef struct {
     char **note;
 } Person;
 
+// *query: The query sentence
+// size[4]: The array to store number of each information
+Person *get_person(char *query, int size[4]);
+
+int insert_info(Person *person);
+
+int check_pass(char *username, char *password);
+
 #endif
