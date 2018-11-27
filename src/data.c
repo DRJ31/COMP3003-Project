@@ -6,7 +6,11 @@
 
 #define BUFSIZE 1024
 
-char
+char query_info[BUFSIZE] = "SELECT * FROM contact WHERE"
+                           "name LIKE %%%s%%"
+                           "mobile LIKE %%%s%%"
+                           "fax LIKE %%%s%%"
+                           "note LIKE %%%s%%";
 
 // Initialize memory string array
 char **alloc_mem(const int *size)
