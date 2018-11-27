@@ -3,76 +3,122 @@
 // Callback functions for GTK widget connected signals
 // See the GTK builder UI definition for information
 
-void cb_btn_func_left_clicked(GtkButton *self, gpointer data)
+void cb_box_show_change_btn_func_left(GtkWidget *self, GtkButton *btn_func_left)
 {
-  const char *curr_stack = gtk_stack_get_visible_child_name(GTK_STACK(data));
+  const char *stack_name = gtk_stack_get_visible_child_name(GTK_STACK(gtk_widget_get_parent(self)));
 
-  // If currently:
-  // - On the search page
-  //   - If the user is not logged in, this button is hidden
-  //   - If the user is logged in, clicking this button goes to the add page
+  // Set left button state. If currently:
+  // - On the search page, clicking this button goes to the add page
   // - On the other pages, clicking this button goes back to the search page
 
-  if (strcmp("stackpage_label_main", curr_stack) == 0) {
-    //
-  } else if (strcmp("stackpage_result", curr_stack) == 0
-          || strcmp("stackpage_editor", curr_stack) == 0
-          || strcmp("stackpage_about", curr_stack) == 0)
+  GList *children = gtk_container_get_children(GTK_CONTAINER(btn_func_left));
+  GtkImage *icon = g_list_nth_data(children, 0);
+  g_list_free(children);
+
+  if (strcmp(stack_name, "stackpage_search") == 0) {
+    gtk_image_set_from_icon_name(icon, "document-new", GTK_ICON_SIZE_LARGE_TOOLBAR);
+    gtk_widget_show(GTK_WIDGET(btn_func_left));
+  } else if (strcmp(stack_name, "stackpage_result") == 0
+          || strcmp(stack_name, "stackpage_editor") == 0
+          || strcmp(stack_name, "stackpage_about") == 0)
   {
-    if (FALSE) { // TODO: STUB: User status query
-
-    } else {
-
-    }
+    gtk_image_set_from_icon_name(icon, "go-previous", GTK_ICON_SIZE_LARGE_TOOLBAR);
+    gtk_widget_show(GTK_WIDGET(btn_func_left));
   } else {
     // Something happened
+    g_warning("%s: unexpected stack page name %s", __func__, stack_name);
   }
 }
 
-void cb_btn_func_right_clicked(GtkButton *self, gpointer data)
+void cb_box_show_change_btn_func_right(GtkWidget *self, GtkButton *btn_func_right)
 {
-  // TODO: STUB
+  const char *stack_name = gtk_stack_get_visible_child_name(GTK_STACK(gtk_widget_get_parent(self)));
+
+  // Set right button state. If currently:
+  // - On the search page, clicking this button goes to the about page
+  // - On the result page
+  //   - If the user is not logged in, this button is hidden
+  //   - If the user is logged in, clicking this button goes to the edit page
+  // - On the add / edit page, clicking this button submits data
+  // - On the about page, this button is hidden
+
+  GList *children = gtk_container_get_children(GTK_CONTAINER(btn_func_right));
+  GtkImage *icon = g_list_nth_data(children, 0);
+  g_list_free(children);
+
+  if (strcmp(stack_name, "stackpage_search") == 0) {
+    gtk_image_set_from_icon_name(icon, "help-about", GTK_ICON_SIZE_LARGE_TOOLBAR);
+    gtk_widget_show(GTK_WIDGET(btn_func_right));
+  } else if (strcmp(stack_name, "stackpage_result") == 0) {
+    gtk_image_set_from_icon_name(icon, "document-edit", GTK_ICON_SIZE_LARGE_TOOLBAR);
+    gtk_widget_show(GTK_WIDGET(btn_func_right));
+  } else if (strcmp(stack_name, "stackpage_editor") == 0) {
+    gtk_image_set_from_icon_name(icon, "document-send", GTK_ICON_SIZE_LARGE_TOOLBAR);
+    gtk_widget_show(GTK_WIDGET(btn_func_right));
+  } else if (strcmp(stack_name, "stackpage_about") == 0) {
+    gtk_widget_hide(GTK_WIDGET(btn_func_right));
+  } else {
+    // Something happened
+    g_warning("%s: unexpected stack page name %s", __func__, stack_name);
+  }
+}
+
+void cb_btn_func_left_clicked(GtkStack *stack)
+{
+  const char *stack_name = gtk_stack_get_visible_child_name(stack);
+
+  // Perform left button action. If currently:
+  // - On the search page, clicking this button goes to the add page
+  // - On the other pages, clicking this button goes back to the search page
+
+  if (strcmp(stack_name, "stackpage_search") == 0) {
+    gtk_stack_set_visible_child_name(stack, "stackpage_editor");
+  } else if (strcmp(stack_name, "stackpage_result") == 0
+          || strcmp(stack_name, "stackpage_editor") == 0
+          || strcmp(stack_name, "stackpage_about") == 0)
+  {
+    gtk_stack_set_visible_child_name(stack, "stackpage_search");
+  } else {
+    // Something happened
+    g_warning("%s: unexpected stack name %s", __func__, stack_name);
+  }
+}
+
+void cb_btn_func_right_clicked(GtkStack *stack)
+{
+  const char *stack_name = gtk_stack_get_visible_child_name(stack);
+
+  // Perform right button action. If currently:
+  // - On the search page, clicking this button goes to the about page
+  // - On the result page, clicking this button goes to the edit page
+  // - On the add / edit page, clicking this button submits data
+  // - On the about page, this button is hidden
+
+  if (strcmp(stack_name, "stackpage_search") == 0) {
+    gtk_stack_set_visible_child_name(stack, "stackpage_about");
+  } else if (strcmp(stack_name, "stackpage_result") == 0) {
+    gtk_stack_set_visible_child_name(stack, "stackpage_editor");
+  } else if (strcmp(stack_name, "stackpage_editor") == 0) {
+    // TODO: Submit data
+    g_message("%s: data submission not implemented!", __func__);
+  } else if (strcmp(stack_name, "stackpage_about") == 0) {
+    // Do nothing (the button is hidden)
+  } else {
+    // Something happened
+    g_warning("%s: unexpected stack name %s", __func__, stack_name);
+  }
 }
 
 void cb_btn_login_clicked(GtkButton *self, gpointer data)
 {
   // TODO: STUB
-}
-
-void cb_btn_about_clicked(GtkButton *self, gpointer data)
-{
-  gtk_popover_popdown(GTK_POPOVER(data));
-
-  // NOTE: Here we manually create a GtkAboutDialog instead of in GTK builder
-  // because when the dialog is destroyed it is not very graceful to rebuild it
-  // again from the GTK builder, so we just create one.
-
-  static const gchar *authors[] = {
-    "Renjie Deng <l630003010@mail.uic.edu.hk>",
-    "Minyong Li <l630003027@mail.uic.edu.hk>",
-    "Zhenghao Wu <l630003054@mail.uic.edu.hk>",
-    NULL,
-  };
-
-  GtkAboutDialog *about = GTK_ABOUT_DIALOG(gtk_about_dialog_new());
-  gtk_about_dialog_set_logo_icon_name(about, "x-office-address-book");
-  gtk_about_dialog_set_program_name(about, "Phone Book");
-  gtk_about_dialog_set_version(about, "0.1");
-  gtk_about_dialog_set_comments(about, "A COMP3003 Data Communication and Networking course project");
-  gtk_about_dialog_set_license_type(about, GTK_LICENSE_MIT_X11);
-  gtk_about_dialog_set_authors(about, authors);
-
-  gtk_widget_show(GTK_WIDGET(about));
+  g_message("%s: not implemented!", __func__);
 }
 
 void cb_searchentry_main_activate(GtkSearchEntry *self, gpointer data)
 {
   // TODO: STUB
-}
-
-void cb_winmain_destroy(GtkApplicationWindow *self, gpointer data)
-{
-  gtk_main_quit();
+  g_message("%s: not implemented!", __func__);
 }
 
 void gui_start(int *argc, char ***argv)

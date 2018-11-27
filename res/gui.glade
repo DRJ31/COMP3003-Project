@@ -164,7 +164,7 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
     <property name="can_focus">False</property>
     <property name="default_width">800</property>
     <property name="default_height">500</property>
-    <signal name="destroy" handler="cb_winmain_destroy" swapped="no"/>
+    <signal name="destroy" handler="gtk_main_quit" swapped="no"/>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="headerbar_main">
         <property name="visible">True</property>
@@ -173,15 +173,16 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
         <property name="show_close_button">True</property>
         <child>
           <object class="GtkButton" id="btn_func_left">
+            <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
             <property name="no_show_all">True</property>
-            <signal name="clicked" handler="cb_btn_func_left_clicked" object="stack" swapped="no"/>
+            <signal name="clicked" handler="cb_btn_func_left_clicked" object="stack" swapped="yes"/>
             <child>
               <object class="GtkImage" id="icon_func_left">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="icon_name">list-add</property>
+                <property name="icon_name">document-new</property>
                 <property name="icon_size">3</property>
               </object>
             </child>
@@ -197,19 +198,21 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
           </object>
           <packing>
             <property name="pack_type">end</property>
+            <property name="position">1</property>
           </packing>
         </child>
         <child>
           <object class="GtkButton" id="btn_func_right">
+            <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
             <property name="no_show_all">True</property>
-            <signal name="clicked" handler="cb_btn_func_right_clicked" object="stack" swapped="no"/>
+            <signal name="clicked" handler="cb_btn_func_right_clicked" object="stack" swapped="yes"/>
             <child>
               <object class="GtkImage" id="icon_func_right">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="icon_name">mail-send</property>
+                <property name="icon_name">help-about</property>
                 <property name="icon_size">3</property>
               </object>
             </child>
@@ -227,13 +230,15 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
         <property name="can_focus">False</property>
         <property name="transition_type">crossfade</property>
         <child>
-          <object class="GtkBox">
+          <object class="GtkBox" id="box_search">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="halign">center</property>
             <property name="valign">center</property>
             <property name="orientation">vertical</property>
             <property name="spacing">12</property>
+            <signal name="map" handler="cb_box_show_change_btn_func_left" object="btn_func_left" swapped="no"/>
+            <signal name="map" handler="cb_box_show_change_btn_func_right" object="btn_func_right" swapped="no"/>
             <child>
               <object class="GtkLabel">
                 <property name="visible">True</property>
@@ -268,16 +273,18 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
             </child>
           </object>
           <packing>
-            <property name="name">stackpage_label_main</property>
+            <property name="name">stackpage_search</property>
             <property name="title" translatable="yes">Main Page</property>
           </packing>
         </child>
         <child>
-          <object class="GtkBox">
+          <object class="GtkBox" id="box_result">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="border_width">10</property>
             <property name="orientation">vertical</property>
+            <signal name="map" handler="cb_box_show_change_btn_func_left" object="btn_func_left" swapped="no"/>
+            <signal name="map" handler="cb_box_show_change_btn_func_right" object="btn_func_right" swapped="no"/>
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
@@ -568,11 +575,13 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
           </packing>
         </child>
         <child>
-          <object class="GtkBox">
+          <object class="GtkBox" id="box_editor">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="border_width">10</property>
             <property name="orientation">vertical</property>
+            <signal name="map" handler="cb_box_show_change_btn_func_left" object="btn_func_left" swapped="no"/>
+            <signal name="map" handler="cb_box_show_change_btn_func_right" object="btn_func_right" swapped="no"/>
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
@@ -852,16 +861,18 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
             </child>
           </object>
           <packing>
-            <property name="name">stackapge_editor</property>
+            <property name="name">stackpage_editor</property>
             <property name="title" translatable="yes">Editor</property>
             <property name="position">2</property>
           </packing>
         </child>
         <child>
-          <object class="GtkBox">
+          <object class="GtkBox" id="box_about">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
+            <signal name="map" handler="cb_box_show_change_btn_func_left" object="btn_func_left" swapped="no"/>
+            <signal name="map" handler="cb_box_show_change_btn_func_right" object="btn_func_right" swapped="no"/>
             <child>
               <object class="GtkImage">
                 <property name="visible">True</property>
