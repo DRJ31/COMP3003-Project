@@ -1,3 +1,12 @@
+# Adapted from https://stackoverflow.com/a/25592735
+# Ignoring all binary files (ignoring all files without extensions)
+*
+!*.*
+!*/
+
+# Exceptions
+!Makefile
+
 # Directories
 .idea/
 .vscode/
@@ -5,12 +14,6 @@ cmake-build-debug/
 
 # Files
 .DS_Store
-*.out
-
-# Misc
-*.o
 *~
-
-# Binary
-pb
-pb-gui-test
+*.o
+*.out
