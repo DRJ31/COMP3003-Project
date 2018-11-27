@@ -33,6 +33,133 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
   <!-- interface-description Course Project of COMP3003 -->
   <!-- interface-copyright 2018 Renjie Deng, Minyong Li, Zhenghao Wu -->
   <!-- interface-authors Minyong Li <l630003027@mail.uic.edu.hk> -->
+  <object class="GtkDialog" id="dlglogin">
+    <property name="can_focus">False</property>
+    <property name="title" translatable="yes">Login</property>
+    <property name="default_width">300</property>
+    <property name="default_height">200</property>
+    <property name="icon_name">x-office-address-book</property>
+    <property name="type_hint">dialog</property>
+    <child>
+      <placeholder/>
+    </child>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <object class="GtkButton">
+                <property name="label" translatable="yes">Cancal</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label" translatable="yes">Login</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">center</property>
+            <property name="margin_top">10</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">10</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">Username</property>
+                <attributes>
+                  <attribute name="scale" value="1"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="margin_left">12</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">Password</property>
+                <attributes>
+                  <attribute name="scale" value="1"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="margin_left">12</property>
+                <property name="input_purpose">password</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
   <object class="GtkApplicationWindow" id="winmain">
     <property name="can_focus">False</property>
     <property name="default_width">800</property>
@@ -42,11 +169,14 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
       <object class="GtkHeaderBar" id="headerbar_main">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="title" translatable="yes">Phone Book</property>
         <property name="show_close_button">True</property>
         <child>
           <object class="GtkButton" id="btn_func_left">
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
+            <property name="no_show_all">True</property>
+            <signal name="clicked" handler="cb_btn_func_left_clicked" object="stack" swapped="no"/>
             <child>
               <object class="GtkImage" id="icon_func_left">
                 <property name="visible">True</property>
@@ -57,37 +187,24 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
             </child>
           </object>
         </child>
-        <child type="title">
-          <object class="GtkStackSwitcher" id="stackswitcher_main">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="stack">stack</property>
-          </object>
-        </child>
         <child>
-          <object class="GtkToggleButton" id="togglebtn_popover_main">
+          <object class="GtkButton" id="btn_login">
+            <property name="label" translatable="yes">Login</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <signal name="toggled" handler="cb_togglebtn_popover_main_toggled" object="popover_main" swapped="no"/>
-            <child>
-              <object class="GtkImage">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="icon_name">x-office-address-book</property>
-                <property name="icon_size">3</property>
-              </object>
-            </child>
+            <signal name="clicked" handler="cb_btn_login_clicked" object="dlglogin" swapped="no"/>
           </object>
           <packing>
             <property name="pack_type">end</property>
-            <property name="position">1</property>
           </packing>
         </child>
         <child>
           <object class="GtkButton" id="btn_func_right">
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
+            <property name="no_show_all">True</property>
+            <signal name="clicked" handler="cb_btn_func_right_clicked" object="stack" swapped="no"/>
             <child>
               <object class="GtkImage" id="icon_func_right">
                 <property name="visible">True</property>
@@ -134,13 +251,14 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
               </packing>
             </child>
             <child>
-              <object class="GtkSearchEntry">
+              <object class="GtkSearchEntry" id="searchentry_main">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="primary_icon_name">edit-find-symbolic</property>
                 <property name="primary_icon_activatable">False</property>
                 <property name="primary_icon_sensitive">False</property>
                 <property name="placeholder_text" translatable="yes">e.g.: Ricky Hou</property>
+                <signal name="activate" handler="cb_searchentry_main_activate" object="winmain" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -898,49 +1016,6 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
             <property name="name">stackpage_about</property>
             <property name="title" translatable="yes">About</property>
             <property name="position">3</property>
-          </packing>
-        </child>
-      </object>
-    </child>
-  </object>
-  <object class="GtkPopover" id="popover_main">
-    <property name="can_focus">False</property>
-    <property name="border_width">10</property>
-    <property name="relative_to">togglebtn_popover_main</property>
-    <signal name="closed" handler="cb_popover_main_closed" object="togglebtn_popover_main" swapped="no"/>
-    <child>
-      <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="margin_bottom">15</property>
-            <property name="label" translatable="yes">You are not logged in</property>
-            <attributes>
-              <attribute name="scale" value="1.5"/>
-            </attributes>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkButton">
-            <property name="label" translatable="yes">Login</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="relief">none</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
           </packing>
         </child>
       </object>
