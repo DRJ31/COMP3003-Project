@@ -109,10 +109,31 @@ void cb_btn_func_right_clicked(GtkStack *stack)
   }
 }
 
-void cb_btn_login_clicked(GtkButton *self, gpointer data)
+void cb_btn_login_clicked(GtkButton *self, GtkDialog *dlglogin)
 {
-  // TODO: STUB
-  g_message("%s: not implemented!", __func__);
+  const char *label = gtk_button_get_label(self);
+
+  if (strcmp(label, "Login") == 0) {
+    // XXX: Since the credential is carried with requests, here we cannot verify
+    // the availability of account, so we just pretend to login...
+
+    switch (gtk_dialog_run(dlglogin)) {
+      case GTK_RESPONSE_OK:
+        gtk_button_set_label(self, "Logout");
+        break;
+      default:
+        break;
+    }
+
+    // We need to manually hide the login dialog
+    gtk_widget_hide(GTK_WIDGET(dlglogin));
+  } else if (strcmp(label, "Logout") == 0) {
+    // ... and here we just pretend to logout
+    gtk_button_set_label(self, "Login");
+  } else {
+    // Something happened
+    g_warning("%s: unexpected login button label %s", __func__, label);
+  }
 }
 
 void cb_searchentry_main_activate(GtkSearchEntry *self, gpointer data)
