@@ -21,6 +21,9 @@ char insert_fmt[BUFSIZE] = "INSERT INTO contact "
 char pass_fmt[BUFSIZE] = "SELECT * FROM users WHERE "
                          "username='%s' AND password=PASSWORD('%s')";
 
+char update_fmt[BUFSIZE] = "UPDATE contact SET name='%s',mobile='%s',"
+                           "fax='%s',note='%s' WHERE name LIKE '%%%s%%'";
+                         
 // Initialize memory string array
 char **alloc_mem(int size)
 {
@@ -37,10 +40,10 @@ char **alloc_mem(int size)
 Person *init_person(int size[4])
 {
     Person *person = (Person *)malloc(sizeof(Person));
-    person->name = alloc_mem(size[0]);
-    person->mobile = alloc_mem(size[1]);
-    person->fax = alloc_mem(size[2]);
-    person->note = alloc_mem(size[3]);
+    person->name = alloc_mem(size[0] + 1);
+    person->mobile = alloc_mem(size[1] + 1);
+    person->fax = alloc_mem(size[2] + 1);
+    person->note = alloc_mem(size[3] + 1);
     return person;
 }
 
@@ -101,10 +104,11 @@ char *str_composer(char **arr)
     char *str = (char *)malloc(sizeof(char) * BUFSIZE);
     int i = 0;
     while (arr[i] != NULL) {
-        strcpy(str, arr[i]);
+        strcat(str, arr[i]);
         if (arr[i + 1] != NULL) {
-            strcpy(str, ",");
+            strcat(str, ",");
         }
+        i++;
     }
     return str;
 }
@@ -117,14 +121,14 @@ Person *get_person(char *query, int size[4])
     MYSQL *mysql = (MYSQL *)malloc(sizeof(MYSQL));
     MYSQL_RES *res;
     MYSQL_ROW row;
-    char query_query[BUFSIZE];
-    sprintf(query_query, query_fmt, query, query, query, query);
+    char find_query[BUFSIZE];
+    sprintf(find_query, query_fmt, query, query, query, query);
 
     if (!connect_mysql(mysql)) {
         return NULL;
     }
 
-    status = mysql_real_query(mysql, query_query, strlen(query_query));
+    status = mysql_real_query(mysql, find_query, strlen(find_query));
     if (status) {
         fprintf(stderr, "Failed to query: %s\n", mysql_error(mysql));
         return NULL;
@@ -132,6 +136,9 @@ Person *get_person(char *query, int size[4])
     puts("Query success");
 
     res = mysql_store_result(mysql);
+    if (mysql_num_rows(res) == 0) {
+        return NULL;
+    }
     row = mysql_fetch_row(res);
     person->name = str_decomposer(row[1], &size[0]);
     person->mobile = str_decomposer(row[2], &size[1]);
@@ -189,4 +196,46 @@ int check_pass(char *username, char *password)
         return FALSE;
     }
     return TRUE;
+}
+
+int update_info(Person *person, char *name)
+{
+    char *fullname = str_composer(person->name);
+    char *mobile = str_composer(person->mobile);
+    char *fax = str_composer(person->fax);
+    char *note = str_composer(person->note);
+    MYSQL *mysql = (MYSQL *)malloc(sizeof(MYSQL));
+    char update_query[BUFSIZE];
+    int status;
+    sprintf(update_query, update_fmt, fullname, mobile, fax, note, name);
+
+    if (!connect_mysql(mysql)) {
+        return FALSE;
+    }
+
+    status = mysql_real_query(mysql, update_query, strlen(update_query));
+    if (status) {
+        fprintf(stderr, "Failed to update: %s\n", mysql_error(mysql));
+        return FALSE;
+    }
+    puts("Update sucess");
+    return TRUE;
+}
+
+int main(void)
+{
+    int size[4] = {2, 1, 1, 1};
+    Person *person = init_person(size);
+    person->name[0] = "zh";
+    person->name[1] = "zzzh";
+    person->name[2] = NULL;
+    person->mobile[0] = "12309132";
+    person->fax[0] = "2139123123";
+    person->note[0] = "Gay";
+    person->mobile[1] = NULL;
+    person->fax[1] = NULL;
+    person->note[1] = NULL;
+    int status = update_info(person, "zzz");
+    printf("%d", status);
+    return 0;
 }

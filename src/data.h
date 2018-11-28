@@ -16,4 +16,6 @@ int insert_info(Person *person);
 
 int check_pass(char *username, char *password);
 
+int update_info(Person *person, char *name);
+
 #endif
