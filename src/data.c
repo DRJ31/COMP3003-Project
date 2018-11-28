@@ -221,21 +221,3 @@ int update_info(Person *person, char *name)
     puts("Update sucess");
     return TRUE;
 }
-
-int main(void)
-{
-    int size[4] = {2, 1, 1, 1};
-    Person *person = init_person(size);
-    person->name[0] = "zh";
-    person->name[1] = "zzzh";
-    person->name[2] = NULL;
-    person->mobile[0] = "12309132";
-    person->fax[0] = "2139123123";
-    person->note[0] = "Gay";
-    person->mobile[1] = NULL;
-    person->fax[1] = NULL;
-    person->note[1] = NULL;
-    int status = update_info(person, "zzz");
-    printf("%d", status);
-    return 0;
-}
