@@ -1,22 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "parson.h"
 #include "json.h"
 
 #define BUFSIZE 1024
-
-
-char **alloc_mem(int size)
-{
-    char **pt;
-    pt = (char **)malloc(sizeof(char *) * size);
-    for (int i = 0; i <size; i++) {
-        pt[i] = (char *)malloc(sizeof(char) * BUFSIZE);
-        memset(pt[i], 0, BUFSIZE * sizeof(char));
-    }
-    return pt;
-}
 
 // int main(){
 //     // Construct a Person struct

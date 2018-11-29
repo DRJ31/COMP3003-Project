@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mysql.h>
-#include "data.h"
+#include "json.h"
 
 #define BUFSIZE 1024
 #define TRUE    1
@@ -177,7 +177,6 @@ int check_pass(char *username, char *password)
 {
     MYSQL *mysql = (MYSQL *)malloc(sizeof(MYSQL));
     MYSQL_RES *res;
-    MYSQL_ROW row;
     char check_query[BUFSIZE];
     int status;
     sprintf(check_query, pass_fmt, username, password);

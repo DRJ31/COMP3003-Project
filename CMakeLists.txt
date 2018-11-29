@@ -12,5 +12,6 @@ link_directories (${GTK3_LIBRARY_DIRS})
 set(SOURCE_FILES src/main.c src/gui.c)
 add_executable(pb ${SOURCE_FILES})
 target_link_libraries (pb ${GTK3_LIBRARIES})
+include_directories(libs/parson)
 
-add_executable(data src/data.c)
+add_executable(data src/data.c src/json.c libs/parson/parson.c)
