@@ -1,6 +1,6 @@
 CFLAGS  += $(shell pkg-config --cflags gtk+-3.0)
 
-OBJS = main.o gui.o
+OBJS = main.o gui.o server.o
 
 .PHONY: all clean
 
