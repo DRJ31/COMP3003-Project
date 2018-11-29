@@ -39,73 +39,28 @@ char **alloc_mem(int size)
     return pt;
 }
 
+void field_to_json_array(JSON_Object *root_object, char* field_name, char ** struct_item){
+    int i = 0;
+    while (struct_item[i] != NULL){
+        if (i == 0){
+            json_object_dotset_value(root_object, field_name, json_parse_string("[\"\"]"));
+        }
+        JSON_Array *field;
+        field = json_object_get_array(root_object, field_name);
+        if (i == 0){
+            json_array_remove(field, 0);
+        }
+        json_array_append_string(field, struct_item[i]);
+        i++;
+    }
+}
+
 char* person_to_json_string (JSON_Value *root_value, Person *person) {
     JSON_Object *root_object = json_value_get_object(root_value);
-    int i = 0;
-    while (person->name[i] != NULL){
-        if (i == 0){
-            json_object_dotset_value(root_object, "name", json_parse_string("[\"\"]"));
-        }
-        JSON_Array *field;
-        field = json_object_get_array(root_object, "name");
-        if (i == 0){
-            json_array_remove(field, 0);
-        }
-        json_array_append_string(field, person->name[i]);
-        i++;
-    }
-
-    i = 0;
-    while (person->mobile[i] != NULL){
-        if (i == 0){
-            json_object_dotset_value(root_object, "mobile", json_parse_string("[\"\"]"));
-        }
-        JSON_Array *field;
-        field = json_object_get_array(root_object, "mobile");
-        if (i == 0){
-            json_array_remove(field, 0);
-        }
-        json_array_append_string(field, person->mobile[i]);
-        i++;
-    }
-
-    i = 0;
-    while (person->fax[i] != NULL){
-        if (i == 0){
-            json_object_dotset_value(root_object, "fax", json_parse_string("[\"\"]"));
-        }
-        JSON_Array *field;
-        field = json_object_get_array(root_object, "fax");
-        if (i == 0){
-            json_array_remove(field, 0);
-        }
-        json_array_append_string(field, person->fax[i]);
-        i++;
-    }
-    i = 0;
-    while (person->note[i] != NULL){
-        if (i == 0){
-            json_object_dotset_value(root_object, "note", json_parse_string("[\"\"]"));
-        }
-        JSON_Array *field;
-        field = json_object_get_array(root_object, "note");
-        if (i == 0){
-            json_array_remove(field, 0);
-        }
-        json_array_append_string(field, person->note[i]);
-        i++;
-    }
-
-
-//    json_object_set_string(root_object, "name", "Ricky Hou");
-//    JSON_Array *mobile;
-//    json_object_dotset_value(root_object, "mobile", json_parse_string("[\"+555-555-2324\"]"));
-//    mobile = json_object_get_array(root_object, "mobile");
-//    json_array_append_string(mobile, "fuckyou");
-//    // json_object_dotset_string(root_object, "mobile", json_array_get_wrapping_value(mobile));
-//    //json_object_set_value(root_object, "mobile", json_parse_string("[\"+555-555-2324\"]"));
-//    json_object_dotset_value(root_object, "fax", json_parse_string("[\"+555-555-2323\"]"));
-//    json_object_dotset_string(root_object, "note", "Data communication and networking instructor");
+    field_to_json_array(root_object, "name", person->name);
+    field_to_json_array(root_object, "mobile", person->mobile);
+    field_to_json_array(root_object, "fax", person->fax);
+    field_to_json_array(root_object, "note", person->note);
     return json_serialize_to_string_pretty(root_value);
 }
 
