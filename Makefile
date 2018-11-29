@@ -14,7 +14,8 @@ endif
 
 export ARFLAGS = rcs
 
-LDFLAGS += $(shell pkg-config --libs gtk+-3.0)
+CFLAGS  += -I$(shell pwd)/libs/parson
+LDFLAGS += $(shell pkg-config --libs gtk+-3.0 libmariadb)
 
 SRCDIR  = src
 LIBDIR  = libs
@@ -34,7 +35,7 @@ clean:
 
 tests: $(TESTDIR)
 
-$(NAME): $(SRCDIR) $(LIBDIR)
+$(NAME): $(LIBDIR) $(SRCDIR)
 	$(LD) $(LDFLAGS) -o $@ $(SRCDIR)/src.a $(LIBDIR)/libs.a
 
 $(SRCDIR):

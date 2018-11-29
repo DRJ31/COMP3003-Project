@@ -1,6 +1,6 @@
-CFLAGS  += $(shell pkg-config --cflags gtk+-3.0)
+CFLAGS += $(shell pkg-config --cflags gtk+-3.0 libmariadb)
 
-OBJS = main.o gui.o server.o
+OBJS = main.o data.o json.o http.o gui.o server.o
 
 .PHONY: all clean
 
