@@ -1,4 +1,6 @@
+#include <unistd.h>
 #include <gtk/gtk.h>
+#include "client.h"
 
 // Callback functions for GTK widget connected signals
 // See the GTK builder UI definition for information
@@ -136,10 +138,129 @@ void cb_btn_login_clicked(GtkButton *self, GtkDialog *dlglogin)
   }
 }
 
-void cb_searchentry_main_activate(GtkSearchEntry *self, gpointer data)
+/*
+ * Private structure: used to pass UI elements and a message queue between
+ * update_visual_elements() and do_search().
+ *
+ * Magic. Don't touch.
+ */
+struct _Elements {
+  GAsyncQueue *msg_queue;
+  GtkWidget *header_bar;
+  GtkWidget *search_entry;
+};
+
+gboolean update_visual_elements(gpointer data)
 {
-  // TODO: STUB
-  g_message("%s: not implemented!", __func__);
+  struct _Elements *elements = (struct _Elements *)data;
+
+  // Timeout of bouncing
+  static const unsigned int timeout = 50;
+
+  // Internal timer
+  static unsigned int timer = 0;
+
+  // Eye candy start
+  if (timer == 0) {
+    gtk_entry_set_progress_fraction(GTK_ENTRY(elements->search_entry), 0.0);
+    gtk_widget_set_sensitive(GTK_WIDGET(elements->search_entry), FALSE);
+
+    // Show the text also on header bar
+    gtk_header_bar_set_title(GTK_HEADER_BAR(elements->header_bar), "Searching...");
+  }
+
+  if (timer < timeout) {
+    gtk_entry_progress_pulse(GTK_ENTRY(elements->search_entry));
+    timer += 1;
+
+    // Check if the search succeeded.
+    // - If yes, prepare and switch to the result page
+    // - If no, display error message
+    Person *person = (Person *)g_async_queue_try_pop(elements->msg_queue);
+    if (person) {
+      if (person->name) {
+        // Query success
+        // TODO
+        g_message("%s: stub, not implemented!", __func__);
+
+        gtk_header_bar_set_title(GTK_HEADER_BAR(elements->header_bar), "Search");
+        goto end;
+      } else {
+        // Query error
+
+        gtk_header_bar_set_title(GTK_HEADER_BAR(elements->header_bar), "Search error! Please retry...");
+        goto end;
+      }
+    } else {} // Keep going
+
+    // Let g_timeout keep running this function
+    return TRUE;
+  }
+
+  // Timed out, restore the elements to the default state
+  gtk_header_bar_set_title(GTK_HEADER_BAR(elements->header_bar), "Timed out, please retry.");
+
+end:
+  gtk_entry_set_progress_fraction(GTK_ENTRY(elements->search_entry), 0.0);
+  gtk_widget_set_sensitive(GTK_WIDGET(elements->search_entry), TRUE);
+
+  // We are also responsible to free the unused memory...
+  free(elements);
+
+  // Reset timer too
+  timer = 0;
+
+  // Stop g_timeout from running this function
+  return FALSE;
+}
+
+void *do_search(gpointer data)
+{
+  struct _Elements *elements = (struct _Elements *)data;
+
+  // Extract query text from the search entry
+  const char *query_str = gtk_entry_get_text(GTK_ENTRY(elements->search_entry));
+
+  // Just do it (this is synchronous)
+  Person *person = client_query(query_str);
+
+  if (!person) {
+    // Query failure, but we still need to enqueue something to notify the UI...
+    g_async_queue_push(elements->msg_queue, g_malloc0_n(1, sizeof(Person)));
+  } else {
+    g_async_queue_push(elements->msg_queue, person);
+  }
+
+  // Thread dies
+  return NULL;
+}
+
+void cb_searchentry_main_activate(GtkEntry *self, GtkHeaderBar *header_bar)
+{
+  // Pulse the progress bar in the search entry to show the query is ongoing
+  struct _Elements *elements = malloc(sizeof(struct _Elements));
+  if (!elements) {
+    g_warning("%s: memory allocation failed!", __func__);
+    return;
+  }
+
+  // This queue is used to pass messages between the UI update timer and the
+  // searching thread...
+  GAsyncQueue *queue = g_async_queue_new();
+
+  // Zip them together for the function to update
+  elements->msg_queue    = queue;
+  elements->header_bar   = GTK_WIDGET(header_bar);
+  elements->search_entry = GTK_WIDGET(self);
+
+  // Spawn a new thread to retrieve data from the server
+  g_thread_unref(g_thread_new("search", do_search, elements));
+
+  // NOTE: This is crucial. If we spawn a new thread to update the widget then
+  // the program simply crashes because GTK+3 IS NOT THREAD SAFE. Use this to
+  // keep the UI updated in the UI thread (which is the main thread of this
+  // program).
+  g_timeout_add(100, update_visual_elements, elements);
 }
 
 void gui_start(int *argc, char ***argv)
