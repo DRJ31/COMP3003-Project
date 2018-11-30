@@ -916,6 +916,7 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
     <property name="default_height">200</property>
     <property name="icon_name">x-office-address-book</property>
     <property name="type_hint">dialog</property>
+    <property name="transient_for">winmain</property>
     <property name="attached_to">winmain</property>
     <child>
       <placeholder/>
