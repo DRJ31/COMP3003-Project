@@ -7,7 +7,10 @@
 
 #define BUFSIZE 1024
 
-int main(void) {
+char *msg_transfer(char *host, uint16_t port, char *msg) {
+    char buf[BUFSIZE] = {0}; // Receive respond from server
+    char *result; // Store result
+
     // Create file descriptor
     int fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd == -1) {
@@ -18,8 +21,8 @@ int main(void) {
     // Connect to server
     struct sockaddr_in c_addr;
     c_addr.sin_family = AF_INET;
-    c_addr.sin_port = htons(8081); // Modify server port here
-    inet_pton(AF_INET, "127.0.0.1", &c_addr.sin_addr.s_addr); // Modify server address here
+    c_addr.sin_port = htons(port); // Modify server port here
+    inet_pton(AF_INET, host, &c_addr.sin_addr.s_addr); // Modify server address here
 
     int ret = connect(fd, (struct sockaddr*)&c_addr, sizeof(c_addr));
     if (ret == -1) {
@@ -27,29 +30,16 @@ int main(void) {
         exit(-1);
     }
 
-    char buf[BUFSIZE] = {0};
-    write(fd, "tcp", 3); // Tell server it is tcp client
-    read(fd, buf, sizeof(buf)); // Receive return message
-    puts(buf);
-    while (1) {
-        // Send message
-        memset(buf, 0, sizeof(buf)); // Initialize string
-        puts("Input a string: ");
-        // Exit the program by Ctrl-D or enter "exit"
-        if (scanf("%s", buf) == EOF || strcmp(buf, "exit") == 0) {
-            write(fd, "exit", 4);
-            break;
-        }
-        write(fd, buf, strlen(buf)); // Send data to server
-
-        // Receive message
-        ssize_t len = read(fd, buf, sizeof(buf));
-        if (len == -1) {
-            perror("Read error");
-            exit(-1);
-        }
-        puts(buf);
+    // Send message
+    write(fd, msg, strlen(msg)); // Send data to server
+    // Receive message
+    ssize_t len = read(fd, buf, sizeof(buf));
+    if (len == -1) {
+        perror("Read error");
+        exit(-1);
     }
+    result = (char *)malloc(sizeof(char) * (strlen(buf) + 1));
+    strcpy(result, buf);
     close(fd);
-    return 0;
+    return result;
 }
