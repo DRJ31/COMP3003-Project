@@ -111,8 +111,7 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
             <property name="valign">center</property>
             <property name="orientation">vertical</property>
             <property name="spacing">12</property>
-            <signal name="map" handler="cb_box_show_change_btn_func_left" object="btn_func_left" swapped="no"/>
-            <signal name="map" handler="cb_box_show_change_btn_func_right" object="btn_func_right" swapped="no"/>
+            <signal name="map" handler="cb_box_show_change_visual" swapped="yes"/>
             <child>
               <object class="GtkLabel">
                 <property name="visible">True</property>
@@ -159,8 +158,7 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
             <property name="can_focus">False</property>
             <property name="border_width">10</property>
             <property name="orientation">vertical</property>
-            <signal name="map" handler="cb_box_show_change_btn_func_left" object="btn_func_left" swapped="no"/>
-            <signal name="map" handler="cb_box_show_change_btn_func_right" object="btn_func_right" swapped="no"/>
+            <signal name="map" handler="cb_box_show_change_visual" swapped="yes"/>
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
@@ -387,8 +385,7 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
             <property name="can_focus">False</property>
             <property name="border_width">10</property>
             <property name="orientation">vertical</property>
-            <signal name="map" handler="cb_box_show_change_btn_func_left" object="btn_func_left" swapped="no"/>
-            <signal name="map" handler="cb_box_show_change_btn_func_right" object="btn_func_right" swapped="no"/>
+            <signal name="map" handler="cb_box_show_change_visual" swapped="yes"/>
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
@@ -678,8 +675,7 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
-            <signal name="map" handler="cb_box_show_change_btn_func_left" object="btn_func_left" swapped="no"/>
-            <signal name="map" handler="cb_box_show_change_btn_func_right" object="btn_func_right" swapped="no"/>
+            <signal name="map" handler="cb_box_show_change_visual" swapped="yes"/>
             <child>
               <object class="GtkImage">
                 <property name="visible">True</property>

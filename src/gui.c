@@ -5,38 +5,23 @@
 // Callback functions for GTK widget connected signals
 // See the GTK builder UI definition for information
 
-void cb_box_show_change_btn_func_left(GtkWidget *self, GtkButton *btn_func_left)
+void cb_box_show_change_visual(GtkBuilder *builder)
 {
-  const char *stack_name = gtk_stack_get_visible_child_name(GTK_STACK(gtk_widget_get_parent(self)));
+  GtkWidget *headerbar_main  = GTK_WIDGET(gtk_builder_get_object(builder, "headerbar_main"));
+  GtkWidget *btn_func_left   = GTK_WIDGET(gtk_builder_get_object(builder, "btn_func_left"));
+  GtkWidget *btn_func_right  = GTK_WIDGET(gtk_builder_get_object(builder, "btn_func_right"));
+  GtkWidget *icon_func_left  = GTK_WIDGET(gtk_builder_get_object(builder, "icon_func_left"));
+  GtkWidget *icon_func_right = GTK_WIDGET(gtk_builder_get_object(builder, "icon_func_right"));
 
-  // Set left button state. If currently:
+  const char *stack_name = gtk_stack_get_visible_child_name(
+    GTK_STACK(gtk_builder_get_object(builder, "stack"))
+  );
+
+  // Set left button state, if currently:
   // - On the search page, clicking this button goes to the add page
   // - On the other pages, clicking this button goes back to the search page
-
-  GList *children = gtk_container_get_children(GTK_CONTAINER(btn_func_left));
-  GtkImage *icon = g_list_nth_data(children, 0);
-  g_list_free(children);
-
-  if (strcmp(stack_name, "stackpage_search") == 0) {
-    gtk_image_set_from_icon_name(icon, "document-new", GTK_ICON_SIZE_LARGE_TOOLBAR);
-    gtk_widget_show(GTK_WIDGET(btn_func_left));
-  } else if (strcmp(stack_name, "stackpage_result") == 0
-          || strcmp(stack_name, "stackpage_editor") == 0
-          || strcmp(stack_name, "stackpage_about") == 0)
-  {
-    gtk_image_set_from_icon_name(icon, "go-previous", GTK_ICON_SIZE_LARGE_TOOLBAR);
-    gtk_widget_show(GTK_WIDGET(btn_func_left));
-  } else {
-    // Something happened
-    g_warning("%s: unexpected stack page name %s", __func__, stack_name);
-  }
-}
-
-void cb_box_show_change_btn_func_right(GtkWidget *self, GtkButton *btn_func_right)
-{
-  const char *stack_name = gtk_stack_get_visible_child_name(GTK_STACK(gtk_widget_get_parent(self)));
-
-  // Set right button state. If currently:
+  //
+  // Set right button state, if currently:
   // - On the search page, clicking this button goes to the about page
   // - On the result page
   //   - If the user is not logged in, this button is hidden
@@ -44,21 +29,37 @@ void cb_box_show_change_btn_func_right(GtkWidget *self, GtkButton *btn_func_righ
   // - On the add / edit page, clicking this button submits data
   // - On the about page, this button is hidden
 
-  GList *children = gtk_container_get_children(GTK_CONTAINER(btn_func_right));
-  GtkImage *icon = g_list_nth_data(children, 0);
-  g_list_free(children);
-
   if (strcmp(stack_name, "stackpage_search") == 0) {
-    gtk_image_set_from_icon_name(icon, "help-about", GTK_ICON_SIZE_LARGE_TOOLBAR);
-    gtk_widget_show(GTK_WIDGET(btn_func_right));
+    gtk_header_bar_set_title(GTK_HEADER_BAR(headerbar_main), "Search");
+
+    gtk_image_set_from_icon_name(GTK_IMAGE(icon_func_left), "document-new", GTK_ICON_SIZE_LARGE_TOOLBAR);
+    gtk_image_set_from_icon_name(GTK_IMAGE(icon_func_right), "help-about", GTK_ICON_SIZE_LARGE_TOOLBAR);
+
+    gtk_widget_show(btn_func_left);
+    gtk_widget_show(btn_func_right);
   } else if (strcmp(stack_name, "stackpage_result") == 0) {
-    gtk_image_set_from_icon_name(icon, "document-edit", GTK_ICON_SIZE_LARGE_TOOLBAR);
-    gtk_widget_show(GTK_WIDGET(btn_func_right));
+    gtk_header_bar_set_title(GTK_HEADER_BAR(headerbar_main), "Result");
+
+    gtk_image_set_from_icon_name(GTK_IMAGE(icon_func_left), "go-previous", GTK_ICON_SIZE_LARGE_TOOLBAR);
+    gtk_image_set_from_icon_name(GTK_IMAGE(icon_func_right), "document-edit", GTK_ICON_SIZE_LARGE_TOOLBAR);
+
+    gtk_widget_show(btn_func_left);
+    gtk_widget_show(btn_func_right);
   } else if (strcmp(stack_name, "stackpage_editor") == 0) {
-    gtk_image_set_from_icon_name(icon, "document-send", GTK_ICON_SIZE_LARGE_TOOLBAR);
-    gtk_widget_show(GTK_WIDGET(btn_func_right));
+    gtk_header_bar_set_title(GTK_HEADER_BAR(headerbar_main), "Editor");
+
+    gtk_image_set_from_icon_name(GTK_IMAGE(icon_func_left), "go-previous", GTK_ICON_SIZE_LARGE_TOOLBAR);
+    gtk_image_set_from_icon_name(GTK_IMAGE(icon_func_right), "document-send", GTK_ICON_SIZE_LARGE_TOOLBAR);
+
+    gtk_widget_show(btn_func_left);
+    gtk_widget_show(btn_func_right);
   } else if (strcmp(stack_name, "stackpage_about") == 0) {
-    gtk_widget_hide(GTK_WIDGET(btn_func_right));
+    gtk_header_bar_set_title(GTK_HEADER_BAR(headerbar_main), "About");
+
+    gtk_image_set_from_icon_name(GTK_IMAGE(icon_func_left), "go-previous", GTK_ICON_SIZE_LARGE_TOOLBAR);
+
+    gtk_widget_show(btn_func_left);
+    gtk_widget_hide(btn_func_right);
   } else {
     // Something happened
     g_warning("%s: unexpected stack page name %s", __func__, stack_name);
