@@ -66,15 +66,15 @@ char **size_t_alloc_mem(size_t size)
 
 void field_to_json_array(JSON_Object *root_object, char* field_name, char ** struct_item){
     int i = 0;
+
+    json_object_dotset_value(root_object, field_name, json_parse_string("[]"));
+
+    if (!struct_item)
+        return;
+
     while (struct_item[i] != NULL){
-        if (i == 0){
-            json_object_dotset_value(root_object, field_name, json_parse_string("[\"\"]"));
-        }
         JSON_Array *field;
         field = json_object_get_array(root_object, field_name);
-        if (i == 0){
-            json_array_remove(field, 0);
-        }
         json_array_append_string(field, struct_item[i]);
         i++;
     }
