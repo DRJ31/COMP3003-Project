@@ -410,8 +410,6 @@ gboolean update_visual_elements_on_search(gpointer data)
     if (person) {
       if (person->name) {
         // Query success
-        // TODO
-        g_message("%s: stub, not implemented!", __func__);
 
         update_result_page(elements->builder, person);
         gtk_stack_set_visible_child_name(GTK_STACK(gtk_builder_get_object(elements->builder, "stack")), "stackpage_result");
@@ -420,8 +418,8 @@ gboolean update_visual_elements_on_search(gpointer data)
         goto end;
       } else {
         // Query error
-
         gtk_header_bar_set_title(GTK_HEADER_BAR(headerbar_main), "Search error! Please retry...");
+
         goto end;
       }
     } else {} // Keep going
