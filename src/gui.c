@@ -160,6 +160,9 @@ gboolean update_visual_elements(gpointer data)
   // Internal timer
   static unsigned int timer = 0;
 
+  // The queried person information
+  Person *person = NULL;
+
   // Eye candy start
   if (timer == 0) {
     gtk_entry_set_progress_fraction(GTK_ENTRY(elements->search_entry), 0.0);
@@ -176,7 +179,7 @@ gboolean update_visual_elements(gpointer data)
     // Check if the search succeeded.
     // - If yes, prepare and switch to the result page
     // - If no, display error message
-    Person *person = (Person *)g_async_queue_try_pop(elements->msg_queue);
+    person = (Person *)g_async_queue_try_pop(elements->msg_queue);
     if (person) {
       if (person->name) {
         // Query success
@@ -205,6 +208,7 @@ end:
   gtk_widget_set_sensitive(GTK_WIDGET(elements->search_entry), TRUE);
 
   // We are also responsible to free the unused memory...
+  free(person);
   free(elements);
 
   // Reset timer too
