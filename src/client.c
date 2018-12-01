@@ -2,11 +2,60 @@
 #include "http.h"
 #include "json.h"
 #include "client.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <string.h>
+
+#define BUFSIZE 1024
 
 // Default server address and port. To adjust these settings, use environment
 // variable PB_SERVER and PB_PORT instead.
 static const char *server = "127.0.0.1";
-static const char *port   = "8000";
+static const char *port = "8000";
+
+char *msg_transfer(const char *host, const char *port, const char *msg)
+{
+  char buf[BUFSIZE] = {0}; // Receive respond from server
+  char *result;            // Store result
+
+  // Create file descriptor
+  int fd = socket(AF_INET, SOCK_STREAM, 0);
+  if (fd == -1)
+  {
+    perror("Socket error");
+    return NULL;
+  }
+
+  // Connect to server
+  struct sockaddr_in c_addr;
+  c_addr.sin_family = AF_INET;
+  c_addr.sin_port = htons(atoi(port));               // Modify server port here
+  inet_pton(AF_INET, host, &c_addr.sin_addr.s_addr); // Modify server address here
+
+  int ret = connect(fd, (struct sockaddr *)&c_addr, sizeof(c_addr));
+  if (ret == -1)
+  {
+    perror("Connect error");
+    return NULL;
+  }
+
+  // Send message
+  write(fd, msg, strlen(msg)); // Send data to server
+  // Receive message
+  ssize_t len = read(fd, buf, sizeof(buf));
+  if (len == -1)
+  {
+    perror("Read error");
+    return NULL;
+  }
+  result = (char *)malloc(sizeof(char) * (strlen(buf) + 1));
+  strcpy(result, buf);
+  close(fd);
+  return result;
+}
 
 Person *client_query(const char *q)
 {
@@ -23,7 +72,7 @@ Person *client_query(const char *q)
 
   // Check environment variable for updated server and port
   const char *env_server = g_getenv("PB_SERVER");
-  const char *env_port   = g_getenv("PB_PORT");
+  const char *env_port = g_getenv("PB_PORT");
 
   if (env_server)
     server = env_server;
@@ -37,20 +86,24 @@ Person *client_query(const char *q)
   g_snprintf(server_host, host_size, "%s:%s", server, port);
 
   char *http = http_request_wrap_message(
-    HTTP_GET,
-    path,
-    (struct HttpHeaders) {
-      .host = server_host,
-      .accept = "application/json",
-    },
-    NULL
-  );
+      HTTP_GET,
+      path,
+      (struct HttpHeaders){
+          .host = server_host,
+          .accept = "application/json",
+      },
+      NULL);
 
   g_message("HTTP request: ===\n%s\n===", http);
 
   // Send it over socket
   // TODO
   Person *person = NULL;
+  char *msg = msg_transfer(server, port, q);
+  if (msg != NULL)
+  {
+    puts(msg);
+  }
 
   g_message("%s: stub, not implemented!", __func__);
 
@@ -75,7 +128,7 @@ bool client_add(Person *person)
 
   // Check environment variable for updated server and port
   const char *env_server = g_getenv("PB_SERVER");
-  const char *env_port   = g_getenv("PB_PORT");
+  const char *env_port = g_getenv("PB_PORT");
 
   if (env_server)
     server = env_server;
@@ -88,14 +141,12 @@ bool client_add(Person *person)
   g_snprintf(server_host, host_size, "%s:%s", server, port);
 
   char *http = http_request_wrap_message(
-    HTTP_POST,
-    "/add",
-    (struct HttpHeaders) {
-      .host = server_host,
-      .content_type = "application/json"
-    },
-    json
-  );
+      HTTP_POST,
+      "/add",
+      (struct HttpHeaders){
+          .host = server_host,
+          .content_type = "application/json"},
+      json);
 
   g_message("HTTP request: ===\n%s\n===", http);
 
@@ -133,7 +184,7 @@ bool client_edit(const char *name, Person *person)
 
   // Check environment variable for updated server and port
   const char *env_server = g_getenv("PB_SERVER");
-  const char *env_port   = g_getenv("PB_PORT");
+  const char *env_port = g_getenv("PB_PORT");
 
   if (env_server)
     server = env_server;
@@ -146,14 +197,12 @@ bool client_edit(const char *name, Person *person)
   g_snprintf(server_host, host_size, "%s:%s", server, port);
 
   char *http = http_request_wrap_message(
-    HTTP_POST,
-    path,
-    (struct HttpHeaders) {
-      .host = server_host,
-      .content_type = "application/json"
-    },
-    json
-  );
+      HTTP_POST,
+      path,
+      (struct HttpHeaders){
+          .host = server_host,
+          .content_type = "application/json"},
+      json);
 
   g_message("HTTP request: ===\n%s\n===", http);
 
