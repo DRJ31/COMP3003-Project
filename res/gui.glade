@@ -139,7 +139,7 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
                 <property name="primary_icon_activatable">False</property>
                 <property name="primary_icon_sensitive">False</property>
                 <property name="placeholder_text" translatable="yes">e.g. Ricky Hou</property>
-                <signal name="activate" handler="cb_searchentry_main_activate" object="headerbar_main" swapped="no"/>
+                <signal name="activate" handler="cb_searchentry_main_activate" swapped="yes"/>
               </object>
               <packing>
                 <property name="expand">False</property>

@@ -142,13 +142,10 @@ void cb_btn_login_clicked(GtkButton *self, GtkDialog *dlglogin)
 /*
  * Private structure: used to pass UI elements and a message queue between
  * update_visual_elements() and do_search().
- *
- * Magic. Don't touch.
  */
 struct _Elements {
   GAsyncQueue *msg_queue;
-  GtkWidget *header_bar;
-  GtkWidget *search_entry;
+  GtkBuilder  *builder;
 };
 
 gboolean update_visual_elements(gpointer data)
@@ -166,15 +163,15 @@ gboolean update_visual_elements(gpointer data)
 
   // Eye candy start
   if (timer == 0) {
-    gtk_entry_set_progress_fraction(GTK_ENTRY(elements->search_entry), 0.0);
-    gtk_widget_set_sensitive(GTK_WIDGET(elements->search_entry), FALSE);
+    gtk_entry_set_progress_fraction(GTK_ENTRY(gtk_builder_get_object(elements->builder, "searchentry_main")), 0.0);
+    gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(elements->builder, "searchentry_main")), FALSE);
 
     // Show the text also on header bar
-    gtk_header_bar_set_title(GTK_HEADER_BAR(elements->header_bar), "Searching...");
+    gtk_header_bar_set_title(GTK_HEADER_BAR(gtk_builder_get_object(elements->builder, "headerbar_main")), "Searching...");
   }
 
   if (timer < timeout) {
-    gtk_entry_progress_pulse(GTK_ENTRY(elements->search_entry));
+    gtk_entry_progress_pulse(GTK_ENTRY(gtk_builder_get_object(elements->builder, "searchentry_main")));
     timer += 1;
 
     // Check if the search succeeded.
@@ -187,12 +184,12 @@ gboolean update_visual_elements(gpointer data)
         // TODO
         g_message("%s: stub, not implemented!", __func__);
 
-        gtk_header_bar_set_title(GTK_HEADER_BAR(elements->header_bar), "Search");
+        gtk_header_bar_set_title(GTK_HEADER_BAR(gtk_builder_get_object(elements->builder, "headerbar_main")), "Search");
         goto end;
       } else {
         // Query error
 
-        gtk_header_bar_set_title(GTK_HEADER_BAR(elements->header_bar), "Search error! Please retry...");
+        gtk_header_bar_set_title(GTK_HEADER_BAR(gtk_builder_get_object(elements->builder, "headerbar_main")), "Search error! Please retry...");
         goto end;
       }
     } else {} // Keep going
@@ -202,11 +199,11 @@ gboolean update_visual_elements(gpointer data)
   }
 
   // Timed out, restore the elements to the default state
-  gtk_header_bar_set_title(GTK_HEADER_BAR(elements->header_bar), "Timed out, please retry.");
+  gtk_header_bar_set_title(GTK_HEADER_BAR(gtk_builder_get_object(elements->builder, "headerbar_main")), "Timed out, please retry.");
 
 end:
-  gtk_entry_set_progress_fraction(GTK_ENTRY(elements->search_entry), 0.0);
-  gtk_widget_set_sensitive(GTK_WIDGET(elements->search_entry), TRUE);
+  gtk_entry_set_progress_fraction(GTK_ENTRY(gtk_builder_get_object(elements->builder, "searchentry_main")), 0.0);
+  gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(elements->builder, "searchentry_main")), TRUE);
 
   // We are also responsible to free the unused memory...
   free(person);
@@ -224,7 +221,7 @@ void *do_search(gpointer data)
   struct _Elements *elements = (struct _Elements *)data;
 
   // Extract query text from the search entry
-  const char *query_str = gtk_entry_get_text(GTK_ENTRY(elements->search_entry));
+  const char *query_str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(elements->builder, "searchentry_main")));
 
   // Just do it (this is synchronous)
   Person *person = client_query(query_str);
@@ -240,7 +237,7 @@ void *do_search(gpointer data)
   return NULL;
 }
 
-void cb_searchentry_main_activate(GtkEntry *self, GtkHeaderBar *header_bar)
+void cb_searchentry_main_activate(GtkBuilder *builder)
 {
   // Pulse the progress bar in the search entry to show the query is ongoing
   struct _Elements *elements = malloc(sizeof(struct _Elements));
@@ -254,9 +251,8 @@ void cb_searchentry_main_activate(GtkEntry *self, GtkHeaderBar *header_bar)
   GAsyncQueue *queue = g_async_queue_new();
 
   // Zip them together for the function to update
-  elements->msg_queue    = queue;
-  elements->header_bar   = GTK_WIDGET(header_bar);
-  elements->search_entry = GTK_WIDGET(self);
+  elements->msg_queue = queue;
+  elements->builder   = builder;
 
   // Spawn a new thread to retrieve data from the server
   g_thread_unref(g_thread_new("search", do_search, elements));
