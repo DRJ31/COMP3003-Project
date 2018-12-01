@@ -4,6 +4,8 @@
 #include <glib.h>
 #include "http.h"
 
+#define BUFSIZE 4096
+
 // HTTP version. This implementation sticks to HTTP/1.1, so there is no way to
 // change this string...
 #define HTTP_VERSION "HTTP/1.1"
@@ -338,6 +340,131 @@ char *http_response_wrap_message(enum HttpStatusCode status, struct HttpHeaders 
   // Free unused memory
   free(http_headers);
   free(header_line);
+
+  return ret;
+}
+
+enum HttpMethod http_extract_request_method(const char *req)
+{
+  if (!req)
+    return HTTP_METHOD_UNKNOWN;
+
+  enum HttpMethod ret = HTTP_METHOD_UNKNOWN;
+
+  if (g_str_has_prefix(req, "GET"))
+    ret = HTTP_GET;
+  else if (g_str_has_prefix(req, "PUT"))
+    ret = HTTP_PUT;
+  else if (g_str_has_prefix(req, "POST"))
+    ret = HTTP_POST;
+  else if (g_str_has_prefix(req, "DELETE"))
+    ret = HTTP_DELETE;
+
+  return ret;
+}
+
+char *http_extract_request_path(const char *req)
+{
+  if (!req)
+    return NULL;
+
+  char *buffer = g_malloc(BUFSIZE);
+
+  sscanf(req, "%*s %4095s", buffer); // XXX: Hardcoded buffer size
+
+  char *ret = g_strdup(buffer);
+
+  g_free(buffer);
+  return ret;
+}
+
+enum HttpStatusCode http_extract_response_status(const char *resp)
+{
+  if (!resp)
+    return HTTP_STATUS_UNKNOWN;
+
+  enum HttpStatusCode ret = HTTP_STATUS_UNKNOWN;
+
+  char *buffer = g_malloc(BUFSIZE);
+
+  sscanf(resp, "%*s %4095s", buffer); // XXX: Hardcoded buffer size
+
+  if (g_strcmp0(buffer, "200") == 0)
+    ret = HTTP_STATUS_OK;
+  else if (g_strcmp0(buffer, "204") == 0)
+    ret = HTTP_STATUS_NO_CONTENT;
+  else if (g_strcmp0(buffer, "400") == 0)
+    ret = HTTP_STATUS_BAD_REQUEST;
+  else if (g_strcmp0(buffer, "403") == 0)
+    ret = HTTP_STATUS_FORBIDDEN;
+  else if (g_strcmp0(buffer, "404") == 0)
+    ret = HTTP_STATUS_NOT_FOUND;
+  else if (g_strcmp0(buffer, "406") == 0)
+    ret = HTTP_STATUS_NOT_ACCEPTABLE;
+  else if (g_strcmp0(buffer, "415") == 0)
+    ret = HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE;
+  else if (g_strcmp0(buffer, "500") == 0)
+    ret = HTTP_STATUS_INTERNAL_SERVER_ERROR;
+
+
+  g_free(buffer);
+  return ret;
+}
+
+char *http_extract_header(const char *http, enum HttpHeader header)
+{
+  if (!http)
+    return NULL;
+
+  char *buffer = g_malloc(BUFSIZE);
+  const char *line = NULL;
+
+  switch (header) {
+    case HTTP_HOST:
+      line = g_strstr_len(http, -1, http_header_host);
+      if (line) {
+        sscanf(line, "%*s %4095s", buffer);
+      }
+      break;
+    case HTTP_CONTENT_TYPE:
+      line = g_strstr_len(http, -1, http_header_content_type);
+      if (line) {
+        sscanf(line, "%*s %4095s", buffer);
+      }
+      break;
+    case HTTP_ACCEPT:
+      line = g_strstr_len(http, -1, http_header_accept);
+      if (line) {
+        sscanf(line, "%*s %4095s", buffer);
+      }
+      break;
+    case HTTP_AUTHORIZATION:
+      line = g_strstr_len(http, -1, http_header_authorization);
+      if (line) {
+        sscanf(line, "%*s %4095s", buffer);
+      }
+      break;
+    default:
+      g_warning("%s:%d %s: unexpected header %d", __FILE__, __LINE__, __func__, header);
+      break;
+  }
+
+  char *ret = g_strdup(buffer);
+
+  g_free(buffer);
+  return ret;
+}
+
+char *http_extract_payload(const char *http)
+{
+  if (!http)
+    return NULL;
+
+  const char *payload_start = g_strstr_len(http, -1, "\r\n");
+  if (!payload_start)
+    return NULL;
+
+  char *ret = g_strdup(payload_start + strlen("\r\n"));
 
   return ret;
 }

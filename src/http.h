@@ -5,6 +5,7 @@
  * HTTP status code in an HTTP response.
  */
 enum HttpStatusCode {
+  HTTP_STATUS_UNKNOWN,                ///< Unknown HTTP status code
   HTTP_STATUS_OK,                     ///< HTTP 200
   HTTP_STATUS_NO_CONTENT,             ///< HTTP 204
 
@@ -21,10 +22,21 @@ enum HttpStatusCode {
  * HTTP method in an HTTP request.
  */
 enum HttpMethod {
+  HTTP_METHOD_UNKNOWN, ///< Unknown verb, used to indicate a non-HTTP message
   HTTP_GET,    ///< HTTP GET request
   HTTP_PUT,    ///< HTTP PUT request
   HTTP_POST,   ///< HTTP POST request
   HTTP_DELETE, ///< HTTP DELETE request
+};
+
+/**
+ * HTTP header indicator, mainly for use in http_extract_header().
+ */
+enum HttpHeader {
+  HTTP_HOST,          ///< "Host:"
+  HTTP_CONTENT_TYPE,  ///< "Content-Type:"
+  HTTP_ACCEPT,        ///< "Accept:"
+  HTTP_AUTHORIZATION, ///< "Authorization:"
 };
 
 /**
@@ -60,5 +72,48 @@ char *http_request_wrap_message(enum HttpMethod method, const char *path, struct
  *         memory.
  */
 char *http_response_wrap_message(enum HttpStatusCode status, struct HttpHeaders headers, const char *message);
+
+/**
+ * Extract HTTP method from the request string.
+ *
+ * @param req [in] The HTTP request string.
+ * @return HTTP method represented in HttpMethod.
+ */
+enum HttpMethod http_extract_request_method(const char *req);
+
+/**
+ * Extract HTTP resource path from the request string.
+ *
+ * @param req [in] The HTTP request string.
+ * @return A string containing the HTTP path requested in the request.
+ */
+char *http_extract_request_path(const char *req);
+
+/**
+ * Extract HTTP statua code from the response string.
+ *
+ * @param req [in] The HTTP response string.
+ * @return HTTP status code represented in HttpStatusCode.
+ */
+enum HttpStatusCode http_extract_response_status(const char *resp);
+
+/**
+ * Extract a HTTP header from the HTTP string.
+ *
+ * @param http [in] The HTTP message string.
+ * @param header [in] The HTTP header to extract.
+ * @return A string containing the header content (the part after ":"). The
+ *         caller is responsible for freeing the memory.
+ */
+char *http_extract_header(const char *http, enum HttpHeader header);
+
+/**
+ * Extract HTTP payload from the HTTP string.
+ *
+ * @param http [in] The HTTP message string.
+ * @return A string containing the payload (the part after "\r\n"). The
+ *         caller is responsible for freeing the memory.
+ */
+char *http_extract_payload(const char *http);
 
 #endif
