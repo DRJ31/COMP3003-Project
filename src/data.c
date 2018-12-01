@@ -12,14 +12,14 @@ char query_fmt[BUFSIZE] = "SELECT * FROM contact WHERE "
                            "name LIKE '%%%s%%' OR "
                            "mobile LIKE '%%%s%%' OR "
                            "fax LIKE '%%%s%%' OR "
-                           "note LIKE '%%%s%%'";
+                           "note LIKE '%%%s%%' FOR UPDATE";
 
 char insert_fmt[BUFSIZE] = "INSERT INTO contact "
                            "(name, mobile, fax, note) VALUES "
                            "('%s', '%s', '%s', '%s')";
 
 char pass_fmt[BUFSIZE] = "SELECT * FROM users WHERE "
-                         "username='%s' AND password=PASSWORD('%s')";
+                         "username='%s' AND password=PASSWORD('%s') FOR UPDATE";
 
 char update_fmt[BUFSIZE] = "UPDATE contact SET name='%s',mobile='%s',"
                            "fax='%s',note='%s' WHERE name LIKE '%%%s%%'";
