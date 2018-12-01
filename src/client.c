@@ -62,7 +62,22 @@ Person *client_query(const char *q)
   return person;
 }
 
+bool client_add(Person *person)
+{
+  if (!person)
+    return false;
+
   g_message("%s: stub, not implemented!", __func__);
 
-  return NULL;
+  return false;
+}
+
+bool client_edit(Person *person)
+{
+  if (!person)
+    return false;
+
+  g_message("%s: stub, not implemented!", __func__);
+
+  return false;
 }

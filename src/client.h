@@ -1,6 +1,7 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
+#include <stdbool.h>
 #include "data.h"
 
 /**
@@ -11,5 +12,9 @@
  *         returned.
  */
 Person *client_query(const char *q);
+
+bool client_add(Person *person);
+
+bool client_edit(Person *person);
 
 #endif
