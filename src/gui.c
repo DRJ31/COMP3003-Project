@@ -1,6 +1,14 @@
-#include <unistd.h>
 #include <gtk/gtk.h>
 #include "client.h"
+
+/*
+ * Private structure: used to pass UI elements and a message queue between
+ * an action function and a UI update function.
+ */
+struct _Elements {
+  GAsyncQueue *msg_queue;
+  GtkBuilder  *builder;
+};
 
 // Callback functions for GTK widget connected signals
 // See the GTK builder UI definition for information
@@ -87,6 +95,160 @@ void cb_btn_func_left_clicked(GtkStack *stack)
   }
 }
 
+Person *editor_collect(GtkBuilder *builder)
+{
+  GtkEntry *entry_name_main = GTK_ENTRY(gtk_builder_get_object(builder, "entry_name_main"));
+  GtkEntry *entry_name_aka  = GTK_ENTRY(gtk_builder_get_object(builder, "entry_name_aka"));
+  GtkEntry *entry_phone_1   = GTK_ENTRY(gtk_builder_get_object(builder, "entry_phone_1"));
+  GtkEntry *entry_phone_2   = GTK_ENTRY(gtk_builder_get_object(builder, "entry_phone_2"));
+  GtkEntry *entry_fax_1     = GTK_ENTRY(gtk_builder_get_object(builder, "entry_fax_1"));
+  GtkEntry *entry_fax_2     = GTK_ENTRY(gtk_builder_get_object(builder, "entry_fax_2"));
+  GtkEntry *entry_note_1    = GTK_ENTRY(gtk_builder_get_object(builder, "entry_note_1"));
+  GtkEntry *entry_note_2    = GTK_ENTRY(gtk_builder_get_object(builder, "entry_note_2"));
+
+  const char *name_main = gtk_entry_get_text(entry_name_main);
+  const char *name_aka  = gtk_entry_get_text(entry_name_aka);
+  const char *phone_1   = gtk_entry_get_text(entry_phone_1);
+  const char *phone_2   = gtk_entry_get_text(entry_phone_2);
+  const char *fax_1     = gtk_entry_get_text(entry_fax_1);
+  const char *fax_2     = gtk_entry_get_text(entry_fax_2);
+  const char *note_1    = gtk_entry_get_text(entry_note_1);
+  const char *note_2    = gtk_entry_get_text(entry_note_2);
+
+  Person *person = g_new0(Person, 1);
+
+  if (strlen(name_main) > 0) {
+    if (strlen(name_aka) > 0) {
+      person->name = g_malloc0_n(2 + 1, sizeof(char *)); // + 1 NULL
+      person->name[0] = g_strdup(name_main);
+      person->name[1] = g_strdup(name_aka);
+    } else {
+      person->name = g_malloc0_n(1 + 1, sizeof(char *)); // + 1 NULL
+      person->name[0] = g_strdup(name_main);
+    }
+  } else {
+    if (strlen(name_aka) > 0) {
+      person->name = g_malloc0_n(1 + 1, sizeof(char *)); // + 1 NULL
+      person->name[0] = g_strdup(name_aka);
+    } else {}
+  }
+
+  if (strlen(phone_1) > 0) {
+    if (strlen(phone_2) > 0) {
+      person->mobile = g_malloc0_n(2 + 1, sizeof(char *)); // + 1 NULL
+      person->mobile[0] = g_strdup(phone_1);
+      person->mobile[1] = g_strdup(phone_2);
+    } else {
+      person->mobile = g_malloc0_n(1 + 1, sizeof(char *)); // + 1 NULL
+      person->mobile[0] = g_strdup(phone_1);
+    }
+  } else {
+    if (strlen(phone_2) > 0) {
+      person->mobile = g_malloc0_n(1 + 1, sizeof(char *)); // + 1 NULL
+      person->mobile[0] = g_strdup(phone_2);
+    } else {}
+  }
+
+  if (strlen(fax_1) > 0) {
+    if (strlen(fax_2) > 0) {
+      person->fax = g_malloc0_n(2 + 1, sizeof(char *)); // + 1 NULL
+      person->fax[0] = g_strdup(fax_1);
+      person->fax[1] = g_strdup(fax_2);
+    } else {
+      person->fax = g_malloc0_n(1 + 1, sizeof(char *)); // + 1 NULL
+      person->fax[0] = g_strdup(fax_1);
+    }
+  } else {
+    if (strlen(fax_2) > 0) {
+      person->fax = g_malloc0_n(1 + 1, sizeof(char *)); // + 1 NULL
+      person->fax[0] = g_strdup(fax_2);
+    } else {}
+  }
+
+  if (strlen(note_1) > 0) {
+    if (strlen(note_2) > 0) {
+      person->note = g_malloc0_n(2 + 1, sizeof(char *)); // + 1 NULL
+      person->note[0] = g_strdup(note_1);
+      person->note[1] = g_strdup(note_2);
+    } else {
+      person->note = g_malloc0_n(1 + 1, sizeof(char *)); // + 1 NULL
+      person->note[0] = g_strdup(note_1);
+    }
+  } else {
+    if (strlen(note_2) > 0) {
+      person->note = g_malloc0_n(1 + 1, sizeof(char *)); // + 1 NULL
+      person->note[0] = g_strdup(note_2);
+    } else {}
+  }
+
+  return person;
+}
+
+gboolean update_visual_elements_on_submission(gpointer data)
+{
+  struct _Elements *elements = (struct _Elements *)data;
+
+  gboolean *ret = g_async_queue_try_pop(elements->msg_queue);
+
+  if (ret) {
+    // Widget to operate on
+    GtkWidget *headerbar_main = GTK_WIDGET(gtk_builder_get_object(elements->builder, "headerbar_main"));
+
+    if (*ret == TRUE) {
+      // Update succeeded
+      gtk_header_bar_set_title(GTK_HEADER_BAR(headerbar_main), "Success on update.");
+
+      g_free(elements);
+      return FALSE;
+    } else {
+      // Update failed
+      gtk_header_bar_set_title(GTK_HEADER_BAR(headerbar_main), "Failed to update! Please try again...");
+
+      g_free(elements);
+      return FALSE;
+    }
+  }
+
+  // Keep it running
+  return TRUE;
+}
+
+enum _SubmitAction {
+  _ADD,
+  _EDIT,
+};
+
+/*
+ * Private struct used in do_submit().
+ */
+struct _Submit {
+  GAsyncQueue *msg_queue;
+  enum _SubmitAction action;
+  Person *person;
+};
+
+void *do_submit(gpointer data)
+{
+  struct _Submit *submit = (struct _Submit *)data;
+  gboolean *ret = g_malloc0(sizeof(gboolean));
+
+  if (submit->action == _ADD) {
+    *ret = client_add(submit->person);
+  } else if (submit->action == _EDIT) {
+    *ret = client_edit(submit->person->name[0], submit->person); // XXX
+  }
+
+  // Push the result to the async queue to notify UI thread
+  g_async_queue_push(submit->msg_queue, ret);
+
+  // Free unused data
+  // person_free(submit->person); // TODO: FIXME
+  g_free(submit);
+
+  // Thread dies
+  return NULL;
+}
+
 void cb_btn_func_right_clicked(GtkBuilder *builder)
 {
   GtkStack *stack = GTK_STACK(gtk_builder_get_object(builder, "stack"));
@@ -103,8 +265,30 @@ void cb_btn_func_right_clicked(GtkBuilder *builder)
   } else if (strcmp(stack_name, "stackpage_result") == 0) {
     gtk_stack_set_visible_child_name(stack, "stackpage_editor");
   } else if (strcmp(stack_name, "stackpage_editor") == 0) {
-    // TODO: Submit data
-    g_message("%s: data submission not implemented!", __func__);
+    // Change header bar title to indicate process
+    GtkWidget *headerbar_main = GTK_WIDGET(gtk_builder_get_object(builder, "headerbar_main"));
+    gtk_header_bar_set_title(GTK_HEADER_BAR(headerbar_main), "Submitting...");
+
+    // Collect information in editor
+    Person *person = editor_collect(builder);
+
+    // Message queue used between the action thread and UI thread
+    GAsyncQueue *queue = g_async_queue_new();
+
+    // Spawn a new thread to do actual work
+    struct _Submit *submit = g_new(struct _Submit, 1);
+    submit->msg_queue = queue;
+    submit->action    = _ADD;  // FIXME
+    submit->person    = person;
+
+    g_thread_unref(g_thread_new("submit", do_submit, submit));
+
+    // Wait for a response to update UI
+    struct _Elements *elements = g_new(struct _Elements, 1);
+    elements->msg_queue = queue;
+    elements->builder   = builder;
+
+    g_idle_add(update_visual_elements_on_submission, elements);
   } else if (strcmp(stack_name, "stackpage_about") == 0) {
     // Do nothing (the button is hidden)
   } else {
@@ -189,16 +373,7 @@ void update_result_page(GtkBuilder *builder, Person *person)
   }
 }
 
-/*
- * Private structure: used to pass UI elements and a message queue between
- * update_visual_elements() and do_search().
- */
-struct _Elements {
-  GAsyncQueue *msg_queue;
-  GtkBuilder  *builder;
-};
-
-gboolean update_visual_elements(gpointer data)
+gboolean update_visual_elements_on_search(gpointer data)
 {
   struct _Elements *elements = (struct _Elements *)data;
 
@@ -320,7 +495,7 @@ void cb_searchentry_main_activate(GtkBuilder *builder)
   // the program simply crashes because GTK+3 IS NOT THREAD SAFE. Use this to
   // keep the UI updated in the UI thread (which is the main thread of this
   // program).
-  g_timeout_add(100, update_visual_elements, elements);
+  g_timeout_add(100, update_visual_elements_on_search, elements);
 }
 
 void gui_start(int *argc, char ***argv)
