@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <string.h>
+#include "json.h"
 
 #define BUFSIZE 1024
 #define IPBUFSIZE 128
@@ -15,10 +16,44 @@ void *client_handler(void *arg)
 {
   char buf[BUFSIZE]; // String for received message
   int cfd = *(int *)arg;
+  int method = 1; // Emulate HttpMethod switch
+  Person *person = NULL;
 
   read(cfd, buf, sizeof(buf));
-  // Read data
-  strcat(buf, " 200 OK");
+  switch (method) {
+    case 1: { // GET
+      int size[4];
+      JSON_Value *root_value = json_value_init_object();
+      person = get_person(buf, size);
+      char *person_json = person_to_json_string(root_value, person);
+      memset(buf, 0, BUFSIZE);
+      free(root_value);
+      strcpy(buf, person_json);
+      free(person_json);
+      break;
+    }
+    case 2: { // POST
+      person = json_string_to_person(buf);
+      int status = insert_info(person);
+      memset(buf, 0, BUFSIZE);
+      if (status)
+        strcpy(buf, "Success");
+      else
+        strcpy(buf, "Failed");
+      break;
+    }
+    case 3: { // Login
+      int status = check_pass("lmy441900", "madoka");
+      memset(buf, 0, BUFSIZE);
+      if (status)
+        strcpy(buf, "Success");
+      else
+        strcpy(buf, "Failed");
+      break;
+    }
+    default:
+      break;
+  }
   write(cfd, buf, strlen(buf));
   puts("Thread closed");
   pthread_exit(NULL);

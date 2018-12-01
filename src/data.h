@@ -9,6 +9,14 @@ typedef struct {
 } Person;
 
 /**
+ * Initialize Person
+ *
+ * @param size [in] Array to store size of name, mobile, fax and note
+ * @return
+ */
+Person *init_person(int size[4]);
+
+/**
  * Get information of a person
  *
  * @param query [in] Keywords to get person information

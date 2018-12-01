@@ -97,11 +97,9 @@ Person *client_query(const char *q)
   g_message("HTTP request: ===\n%s\n===", http);
 
   // Send it over socket
-  // TODO
   Person *person = NULL;
   char *msg = msg_transfer(server, port, q);
-  if (msg != NULL)
-  {
+  if (msg != NULL) {
     puts(msg);
   }
 
