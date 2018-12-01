@@ -166,7 +166,7 @@ void update_result_page(GtkBuilder *builder, Person *person)
   // Phone
   if (person->mobile) {
     for (int i = 0; person->mobile[i]; i++) {
-      GtkLabel *label = gtk_label_new(person->mobile[i]);
+      GtkWidget *label = gtk_label_new(person->mobile[i]);
       gtk_box_pack_start(box_phone, label, TRUE, FALSE, 0);
     }
   }
@@ -174,7 +174,7 @@ void update_result_page(GtkBuilder *builder, Person *person)
   // Fax
   if (person->fax) {
     for (int i = 0; person->fax[i]; i++) {
-      GtkLabel *label = gtk_label_new(person->fax[i]);
+      GtkWidget *label = gtk_label_new(person->fax[i]);
       gtk_box_pack_start(box_fax, label, TRUE, FALSE, 0);
     }
   }
@@ -182,7 +182,7 @@ void update_result_page(GtkBuilder *builder, Person *person)
   // Note
   if (person->note) {
     for (int i = 0; person->note[i]; i++) {
-      GtkLabel *label = gtk_label_new(person->note[i]);
+      GtkWidget *label = gtk_label_new(person->note[i]);
       gtk_box_pack_start(box_note, label, TRUE, FALSE, 0);
     }
   }
