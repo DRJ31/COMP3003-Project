@@ -15,6 +15,6 @@ Person *client_query(const char *q);
 
 bool client_add(Person *person);
 
-bool client_edit(const char *path, Person *person);
+bool client_edit(const char *name, Person *person);
 
 #endif
