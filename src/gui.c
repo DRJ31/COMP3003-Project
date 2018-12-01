@@ -158,20 +158,24 @@ gboolean update_visual_elements(gpointer data)
   // Internal timer
   static unsigned int timer = 0;
 
+  // Widgets to manipulate on
+  GtkWidget *searchentry_main = GTK_WIDGET(gtk_builder_get_object(elements->builder, "searchentry_main"));
+  GtkWidget *headerbar_main   = GTK_WIDGET(gtk_builder_get_object(elements->builder, "headerbar_main"));
+
   // The queried person information
   Person *person = NULL;
 
   // Eye candy start
   if (timer == 0) {
-    gtk_entry_set_progress_fraction(GTK_ENTRY(gtk_builder_get_object(elements->builder, "searchentry_main")), 0.0);
-    gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(elements->builder, "searchentry_main")), FALSE);
+    gtk_entry_set_progress_fraction(GTK_ENTRY(searchentry_main), 0.0);
+    gtk_widget_set_sensitive(searchentry_main, FALSE);
 
     // Show the text also on header bar
-    gtk_header_bar_set_title(GTK_HEADER_BAR(gtk_builder_get_object(elements->builder, "headerbar_main")), "Searching...");
+    gtk_header_bar_set_title(GTK_HEADER_BAR(headerbar_main), "Searching...");
   }
 
   if (timer < timeout) {
-    gtk_entry_progress_pulse(GTK_ENTRY(gtk_builder_get_object(elements->builder, "searchentry_main")));
+    gtk_entry_progress_pulse(GTK_ENTRY(searchentry_main));
     timer += 1;
 
     // Check if the search succeeded.
@@ -184,12 +188,13 @@ gboolean update_visual_elements(gpointer data)
         // TODO
         g_message("%s: stub, not implemented!", __func__);
 
-        gtk_header_bar_set_title(GTK_HEADER_BAR(gtk_builder_get_object(elements->builder, "headerbar_main")), "Search");
+        gtk_header_bar_set_title(GTK_HEADER_BAR(headerbar_main), "Result");
+
         goto end;
       } else {
         // Query error
 
-        gtk_header_bar_set_title(GTK_HEADER_BAR(gtk_builder_get_object(elements->builder, "headerbar_main")), "Search error! Please retry...");
+        gtk_header_bar_set_title(GTK_HEADER_BAR(headerbar_main), "Search error! Please retry...");
         goto end;
       }
     } else {} // Keep going
@@ -199,11 +204,11 @@ gboolean update_visual_elements(gpointer data)
   }
 
   // Timed out, restore the elements to the default state
-  gtk_header_bar_set_title(GTK_HEADER_BAR(gtk_builder_get_object(elements->builder, "headerbar_main")), "Timed out, please retry.");
+  gtk_header_bar_set_title(GTK_HEADER_BAR(headerbar_main), "Timed out, please retry.");
 
 end:
-  gtk_entry_set_progress_fraction(GTK_ENTRY(gtk_builder_get_object(elements->builder, "searchentry_main")), 0.0);
-  gtk_widget_set_sensitive(GTK_WIDGET(gtk_builder_get_object(elements->builder, "searchentry_main")), TRUE);
+  gtk_entry_set_progress_fraction(GTK_ENTRY(searchentry_main), 0.0);
+  gtk_widget_set_sensitive(searchentry_main, TRUE);
 
   // We are also responsible to free the unused memory...
   free(person);
@@ -220,8 +225,10 @@ void *do_search(gpointer data)
 {
   struct _Elements *elements = (struct _Elements *)data;
 
+  GtkWidget *searchentry_main = GTK_WIDGET(gtk_builder_get_object(elements->builder, "searchentry_main"));
+
   // Extract query text from the search entry
-  const char *query_str = gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(elements->builder, "searchentry_main")));
+  const char *query_str = gtk_entry_get_text(GTK_ENTRY(searchentry_main));
 
   // Just do it (this is synchronous)
   Person *person = client_query(query_str);
