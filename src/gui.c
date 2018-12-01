@@ -156,7 +156,7 @@ void update_result_page(GtkBuilder *builder, Person *person)
     if (person->name[0]) {
       gtk_label_set_text(label_name_main, person->name[0]);
       if (person->name[1]) {
-        gtk_label_set_text(label_name_main, person->name[1]);
+        gtk_label_set_text(label_name_aka, person->name[1]);
       }
     } else {
       gtk_label_set_text(label_name_main, "Unknown");
