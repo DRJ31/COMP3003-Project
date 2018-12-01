@@ -139,6 +139,55 @@ void cb_btn_login_clicked(GtkButton *self, GtkDialog *dlglogin)
   }
 }
 
+void update_result_page(GtkBuilder *builder, Person *person)
+{
+  if (!person)
+    return;
+
+  GtkLabel *label_name_main = GTK_LABEL(gtk_builder_get_object(builder, "label_name_main"));
+  GtkLabel *label_name_aka  = GTK_LABEL(gtk_builder_get_object(builder, "label_name_aka"));
+
+  GtkBox *box_phone = GTK_BOX(gtk_builder_get_object(builder, "box_phone"));
+  GtkBox *box_fax   = GTK_BOX(gtk_builder_get_object(builder, "box_fax"));
+  GtkBox *box_note  = GTK_BOX(gtk_builder_get_object(builder, "box_note"));
+
+  // Name (only the first one or two is shown)
+  if (person->name) {
+    if (person->name[0]) {
+      gtk_label_set_text(label_name_main, person->name[0]);
+      if (person->name[1]) {
+        gtk_label_set_text(label_name_main, person->name[1]);
+      }
+    } else {
+      gtk_label_set_text(label_name_main, "Unknown");
+    }
+  }
+
+  // Phone
+  if (person->mobile) {
+    for (int i = 0; person->mobile[i]; i++) {
+      GtkLabel *label = gtk_label_new(person->mobile[i]);
+      gtk_box_pack_start(box_phone, label, TRUE, FALSE, 0);
+    }
+  }
+
+  // Fax
+  if (person->fax) {
+    for (int i = 0; person->fax[i]; i++) {
+      GtkLabel *label = gtk_label_new(person->fax[i]);
+      gtk_box_pack_start(box_fax, label, TRUE, FALSE, 0);
+    }
+  }
+
+  // Note
+  if (person->note) {
+    for (int i = 0; person->note[i]; i++) {
+      GtkLabel *label = gtk_label_new(person->note[i]);
+      gtk_box_pack_start(box_note, label, TRUE, FALSE, 0);
+    }
+  }
+}
+
 /*
  * Private structure: used to pass UI elements and a message queue between
  * update_visual_elements() and do_search().
@@ -188,6 +237,8 @@ gboolean update_visual_elements(gpointer data)
         // TODO
         g_message("%s: stub, not implemented!", __func__);
 
+        update_result_page(elements->builder, person);
+        gtk_stack_set_visible_child_name(GTK_STACK(gtk_builder_get_object(elements->builder, "stack")), "stackpage_result");
         gtk_header_bar_set_title(GTK_HEADER_BAR(headerbar_main), "Result");
 
         goto end;
