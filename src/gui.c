@@ -86,8 +86,9 @@ void cb_btn_func_left_clicked(GtkStack *stack)
   }
 }
 
-void cb_btn_func_right_clicked(GtkStack *stack)
+void cb_btn_func_right_clicked(GtkBuilder *builder)
 {
+  GtkStack *stack = GTK_STACK(gtk_builder_get_object(builder, "stack"));
   const char *stack_name = gtk_stack_get_visible_child_name(stack);
 
   // Perform right button action. If currently:
@@ -275,7 +276,7 @@ void gui_start(int *argc, char ***argv)
   GtkApplicationWindow *winmain =
     GTK_APPLICATION_WINDOW(gtk_builder_get_object(builder, "winmain"));
 
-  gtk_builder_connect_signals(builder, NULL);
+  gtk_builder_connect_signals(builder, builder);
 
   gtk_widget_show_all(GTK_WIDGET(winmain));
   gtk_main();
