@@ -483,7 +483,7 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
                         <property name="orientation">vertical</property>
                         <property name="spacing">6</property>
                         <child>
-                          <object class="GtkEntry">
+                          <object class="GtkEntry" id="entry_phone_1">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="placeholder_text" translatable="yes">Mobile Phone</property>
@@ -496,7 +496,7 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkEntry">
+                          <object class="GtkEntry" id="entry_phone_2">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="placeholder_text" translatable="yes">Phone Number</property>
@@ -552,7 +552,7 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
                         <property name="orientation">vertical</property>
                         <property name="spacing">6</property>
                         <child>
-                          <object class="GtkEntry">
+                          <object class="GtkEntry" id="entry_fax_1">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="placeholder_text" translatable="yes">Fax Number 1</property>
@@ -564,7 +564,7 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkEntry">
+                          <object class="GtkEntry" id="entry_fax_2">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="placeholder_text" translatable="yes">Fax Number 2</property>
@@ -619,7 +619,7 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
                         <property name="orientation">vertical</property>
                         <property name="spacing">6</property>
                         <child>
-                          <object class="GtkEntry">
+                          <object class="GtkEntry" id="entry_note_1">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="placeholder_text" translatable="yes">Note 1</property>
@@ -631,7 +631,7 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkEntry">
+                          <object class="GtkEntry" id="entry_note_2">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="placeholder_text" translatable="yes">Note 2</property>
