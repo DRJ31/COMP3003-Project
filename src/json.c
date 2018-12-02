@@ -90,6 +90,8 @@ char* person_to_json_string (JSON_Value *root_value, Person *person) {
 }
 
 Person* json_string_to_person (char* json_string){
+    if (!json_string || strlen(json_string) == 0)
+        return NULL;
     JSON_Value *root_value = json_parse_string(json_string);
     JSON_Object *root_object = json_value_get_object(root_value);
     Person *person = (Person *)malloc(sizeof(Person));

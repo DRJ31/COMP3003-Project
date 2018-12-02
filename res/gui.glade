@@ -225,6 +225,7 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
             </child>
             <child>
               <object class="GtkBox">
+                <property name="width_request">200</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="halign">center</property>
@@ -253,13 +254,34 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkBox" id="box_phone">
+                      <object class="GtkBox">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="margin_left">12</property>
                         <property name="orientation">vertical</property>
                         <child>
-                          <placeholder/>
+                          <object class="GtkLabel" id="label_phone_1">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">start</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="label_phone_2">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">start</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
                         </child>
                       </object>
                       <packing>
@@ -298,13 +320,34 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkBox" id="box_fax">
+                      <object class="GtkBox">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="margin_left">12</property>
                         <property name="orientation">vertical</property>
                         <child>
-                          <placeholder/>
+                          <object class="GtkLabel" id="label_fax_1">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">start</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="label_fax_2">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">start</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
                         </child>
                       </object>
                       <packing>
@@ -343,13 +386,34 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkBox" id="box_note">
+                      <object class="GtkBox">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="margin_left">12</property>
                         <property name="orientation">vertical</property>
                         <child>
-                          <placeholder/>
+                          <object class="GtkLabel" id="label_note_1">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">start</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="label_note_2">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">start</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
                         </child>
                       </object>
                       <packing>
@@ -414,7 +478,6 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
                   <object class="GtkEntry" id="entry_name_main">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="text" translatable="yes">Weifeng Su</property>
                     <property name="placeholder_text" translatable="yes">Name</property>
                     <property name="input_purpose">name</property>
                   </object>
@@ -429,7 +492,6 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="valign">end</property>
-                    <property name="text" translatable="yes">Benz Owner</property>
                     <property name="placeholder_text" translatable="yes">Nick Name</property>
                   </object>
                   <packing>

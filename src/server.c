@@ -56,7 +56,6 @@ void *client_handler(void *arg)
       char *person_json;
       char *response;
       if (person == NULL) {
-        person_json = "The person not exist";
         response = http_response_wrap_message(
           HTTP_STATUS_NOT_FOUND,
           (struct HttpHeaders) {
@@ -65,7 +64,7 @@ void *client_handler(void *arg)
             .content_type = "application/json",
             .authorization = NULL,
           },
-          person_json
+          NULL
         );
       }
       else {
@@ -114,6 +113,7 @@ void *client_handler(void *arg)
   }
   write(cfd, buf, strlen(buf));
   free(person);
+  close(cfd);
   puts("Thread closed");
   pthread_exit(NULL);
 }

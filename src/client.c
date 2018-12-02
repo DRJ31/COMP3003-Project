@@ -100,6 +100,7 @@ Person *client_query(const char *q)
   Person *person = NULL;
   char *msg = msg_transfer(server, port, http);
   if (msg != NULL) {
+    g_message("HTTP response: ===\n%s\n===", msg);
     person = json_string_to_person(http_extract_payload(msg));
   }
 
@@ -152,10 +153,9 @@ bool client_add(Person *person)
   bool result = false;
   char *msg = msg_transfer(server, port, http);
   if (strcmp(msg, "Success") == 0) {
+    g_message("HTTP response: ===\n%s\n===", msg);
     result = true;
   }
-
-  // g_message("%s: stub, not implemented!", __func__);
 
   // Free unused memory
   free(http);

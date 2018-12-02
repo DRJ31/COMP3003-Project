@@ -52,7 +52,8 @@ void cb_box_show_change_visual(GtkBuilder *builder)
     gtk_image_set_from_icon_name(GTK_IMAGE(icon_func_right), "document-edit", GTK_ICON_SIZE_LARGE_TOOLBAR);
 
     gtk_widget_show(btn_func_left);
-    gtk_widget_show(btn_func_right);
+    // gtk_widget_show(btn_func_right); // XXX: Not implemented
+    gtk_widget_hide(btn_func_right);
   } else if (strcmp(stack_name, "stackpage_editor") == 0) {
     gtk_header_bar_set_title(GTK_HEADER_BAR(headerbar_main), "Editor");
 
@@ -331,18 +332,24 @@ void update_result_page(GtkBuilder *builder, Person *person)
 
   GtkLabel *label_name_main = GTK_LABEL(gtk_builder_get_object(builder, "label_name_main"));
   GtkLabel *label_name_aka  = GTK_LABEL(gtk_builder_get_object(builder, "label_name_aka"));
+  GtkLabel *label_phone_1   = GTK_LABEL(gtk_builder_get_object(builder, "label_phone_1"));
+  GtkLabel *label_phone_2   = GTK_LABEL(gtk_builder_get_object(builder, "label_phone_2"));
+  GtkLabel *label_fax_1     = GTK_LABEL(gtk_builder_get_object(builder, "label_fax_1"));
+  GtkLabel *label_fax_2     = GTK_LABEL(gtk_builder_get_object(builder, "label_fax_2"));
+  GtkLabel *label_note_1    = GTK_LABEL(gtk_builder_get_object(builder, "label_note_1"));
+  GtkLabel *label_note_2    = GTK_LABEL(gtk_builder_get_object(builder, "label_note_2"));
 
-  GtkBox *box_phone = GTK_BOX(gtk_builder_get_object(builder, "box_phone"));
-  GtkBox *box_fax   = GTK_BOX(gtk_builder_get_object(builder, "box_fax"));
-  GtkBox *box_note  = GTK_BOX(gtk_builder_get_object(builder, "box_note"));
+  // Clear all labels prior to update
+  gtk_label_set_text(label_name_main, "");
+  gtk_label_set_text(label_name_aka, "");
+  gtk_label_set_text(label_phone_1, "");
+  gtk_label_set_text(label_phone_2, "");
+  gtk_label_set_text(label_fax_1, "");
+  gtk_label_set_text(label_fax_2, "");
+  gtk_label_set_text(label_note_1, "");
+  gtk_label_set_text(label_note_2, "");
 
-  // Remove existing labels in the boxes first
-  // Yes! You see warnings here! Please omit them!
-  gtk_container_foreach(GTK_CONTAINER(box_phone), gtk_widget_destroy, NULL);
-  gtk_container_foreach(GTK_CONTAINER(box_fax), gtk_widget_destroy, NULL);
-  gtk_container_foreach(GTK_CONTAINER(box_note), gtk_widget_destroy, NULL);
-
-  // Name (only the first one or two is shown)
+  // Name (only the first one or two is shown, same as the next categories)
   if (person->name) {
     if (person->name[0]) {
       gtk_label_set_text(label_name_main, person->name[0]);
@@ -350,31 +357,37 @@ void update_result_page(GtkBuilder *builder, Person *person)
         gtk_label_set_text(label_name_aka, person->name[1]);
       }
     } else {
-      gtk_label_set_text(label_name_main, "Unknown");
+      gtk_label_set_text(label_name_main, "N/A");
     }
   }
 
   // Phone
   if (person->mobile) {
-    for (int i = 0; person->mobile[i]; i++) {
-      GtkWidget *label = gtk_label_new(person->mobile[i]);
-      gtk_box_pack_start(box_phone, label, TRUE, FALSE, 0);
+    if (person->mobile[0]) {
+      gtk_label_set_text(label_phone_1, person->mobile[0]);
+      if (person->mobile[1]) {
+        gtk_label_set_text(label_phone_2, person->mobile[1]);
+      }
     }
   }
 
   // Fax
   if (person->fax) {
-    for (int i = 0; person->fax[i]; i++) {
-      GtkWidget *label = gtk_label_new(person->fax[i]);
-      gtk_box_pack_start(box_fax, label, TRUE, FALSE, 0);
+    if (person->fax[0]) {
+      gtk_label_set_text(label_fax_1, person->fax[0]);
+      if (person->fax[1]) {
+        gtk_label_set_text(label_fax_2, person->fax[1]);
+      }
     }
   }
 
   // Note
   if (person->note) {
-    for (int i = 0; person->note[i]; i++) {
-      GtkWidget *label = gtk_label_new(person->note[i]);
-      gtk_box_pack_start(box_note, label, TRUE, FALSE, 0);
+    if (person->note[0]) {
+      gtk_label_set_text(label_note_1, person->note[0]);
+      if (person->note[1]) {
+        gtk_label_set_text(label_note_2, person->note[1]);
+      }
     }
   }
 }
@@ -466,7 +479,7 @@ void *do_search(gpointer data)
 
   if (!person) {
     // Query failure, but we still need to enqueue something to notify the UI...
-    g_async_queue_push(elements->msg_queue, g_malloc0_n(1, sizeof(Person)));
+    g_async_queue_push(elements->msg_queue, g_new0(Person, 1));
   } else {
     g_async_queue_push(elements->msg_queue, person);
   }

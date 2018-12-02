@@ -303,8 +303,9 @@ char *http_request_wrap_message(enum HttpMethod method, const char *path, struct
 
 char *http_response_wrap_message(enum HttpStatusCode status, struct HttpHeaders headers, const char *message)
 {
-  if (!message)
-    return NULL;
+  if (status == HTTP_STATUS_OK)
+    if (!message)
+      return NULL;
 
   char *header_line = http_response_header_line_new(status);
   if (!header_line) {
