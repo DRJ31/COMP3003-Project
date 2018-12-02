@@ -7,7 +7,7 @@ export CFLAGS   = -O2 -fstack-protector-all -flto -pipe -std=c99 -Wall -Wextra -
 export CPPFLAGS = -DNDEBUG -D_FORTIFY_SOURCE=2
 export LDFLAGS  = -rdynamic -fuse-linker-plugin -Wl,-O1,--sort-common,--as-needed,-z,defs,-z,relro,-z,now -flto
 else
-export CFLAGS   = -g -std=c99 -Wall -Wextra -pedantic
+export CFLAGS   = -g -pipe -std=c99 -Wall -Wextra -pedantic
 export CPPFLAGS =
 export LDFLAGS  = -rdynamic
 endif
