@@ -1,4 +1,4 @@
-CFLAGS += $(shell pkg-config --cflags gtk+-3.0 libmariadb)
+CFLAGS += $(shell pkg-config --cflags gtk+-3.0 mariadb glib-2.0)
 
 OBJS = main.o data.o json.o http.o gui.o server.o client.o
 

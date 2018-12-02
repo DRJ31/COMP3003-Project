@@ -15,7 +15,7 @@ endif
 export ARFLAGS = rcs
 
 CFLAGS  += -I$(shell pwd)/libs/parson
-LDFLAGS += $(shell pkg-config --libs gtk+-3.0 libmariadb)
+LDFLAGS += $(shell pkg-config --libs gtk+-3.0 mariadb glib-2.0)
 
 SRCDIR  = src
 LIBDIR  = libs
