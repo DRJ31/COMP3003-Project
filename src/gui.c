@@ -336,6 +336,12 @@ void update_result_page(GtkBuilder *builder, Person *person)
   GtkBox *box_fax   = GTK_BOX(gtk_builder_get_object(builder, "box_fax"));
   GtkBox *box_note  = GTK_BOX(gtk_builder_get_object(builder, "box_note"));
 
+  // Remove existing labels in the boxes first
+  // Yes! You see warnings here! Please omit them!
+  gtk_container_foreach(GTK_CONTAINER(box_phone), gtk_widget_destroy, NULL);
+  gtk_container_foreach(GTK_CONTAINER(box_fax), gtk_widget_destroy, NULL);
+  gtk_container_foreach(GTK_CONTAINER(box_note), gtk_widget_destroy, NULL);
+
   // Name (only the first one or two is shown)
   if (person->name) {
     if (person->name[0]) {
