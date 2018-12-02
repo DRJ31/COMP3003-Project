@@ -149,10 +149,13 @@ bool client_add(Person *person)
   g_message("HTTP request: ===\n%s\n===", http);
 
   // Send it over socket
-  // TODO
   bool result = false;
+  char *msg = msg_transfer(server, port, http);
+  if (strcmp(msg, "Success") == 0) {
+    result = true;
+  }
 
-  g_message("%s: stub, not implemented!", __func__);
+  // g_message("%s: stub, not implemented!", __func__);
 
   // Free unused memory
   free(http);

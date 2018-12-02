@@ -20,7 +20,7 @@ char **path_extract(char *path, int length)
   for (int i = 0; i < length; i++) {
     path_value[i] = (char *)malloc(sizeof(char) * BUFSIZE);
   }
-  for (int i = 1; i < strlen(path); i++) {
+  for (unsigned int i = 1; i < strlen(path); i++) {
     if (path[i] == '/') {
       strncpy(path_value[index], path + start, count);
       path_value[index][count] = '\0';
@@ -70,7 +70,6 @@ void *client_handler(void *arg)
       }
       else {
         person_json = person_to_json_string(root_value, person);
-        Person *new_person = json_string_to_person(person_json);
         response = http_response_wrap_message(
           HTTP_STATUS_OK,
           (struct HttpHeaders) {
@@ -92,7 +91,7 @@ void *client_handler(void *arg)
       break;
     }
     case HTTP_POST: { 
-      person = json_string_to_person(buf);
+      person = json_string_to_person(http_extract_payload(buf));
       int status = insert_info(person);
       memset(buf, 0, BUFSIZE);
       if (status)
