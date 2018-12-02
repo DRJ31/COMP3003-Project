@@ -461,11 +461,11 @@ char *http_extract_payload(const char *http)
   if (!http)
     return NULL;
 
-  const char *payload_start = g_strstr_len(http, -1, "\r\n");
+  const char *payload_start = g_strstr_len(http, -1, "\n\r\n");
   if (!payload_start)
     return NULL;
 
-  char *ret = g_strdup(payload_start + strlen("\r\n"));
+  char *ret = g_strdup(payload_start + strlen("\n\r\n"));
 
   return ret;
 }
