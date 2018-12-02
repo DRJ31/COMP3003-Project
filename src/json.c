@@ -97,7 +97,7 @@ Person* json_string_to_person (char* json_string){
         if (strcmp(json_object_get_name(root_object, i), "name") == 0){
             char **field = size_t_alloc_mem(json_array_get_count(json_value_get_array(json_object_get_value(root_object, "name")))+1);
             for (size_t j = 0; j < json_array_get_count(json_value_get_array(json_object_get_value(root_object, "name"))); j++){
-                field[j] = strdup(json_array_get_string(json_value_get_array(json_object_get_value(root_object, "name")), j));
+                strcpy(field[j], json_array_get_string(json_value_get_array(json_object_get_value(root_object, "name")), j));
             }
             field[json_array_get_count(json_value_get_array(json_object_get_value(root_object, "name")))] = NULL;
             person->name = field;
@@ -105,7 +105,7 @@ Person* json_string_to_person (char* json_string){
         if (strcmp(json_object_get_name(root_object, i), "mobile") == 0){
             char **field = size_t_alloc_mem(json_array_get_count(json_value_get_array(json_object_get_value(root_object, "mobile")))+1);
             for (size_t j = 0; j < json_array_get_count(json_value_get_array(json_object_get_value(root_object, "mobile"))); j++){
-                field[j] = strdup(json_array_get_string(json_value_get_array(json_object_get_value(root_object, "mobile")), j));
+                strcpy(field[j], json_array_get_string(json_value_get_array(json_object_get_value(root_object, "mobile")), j));
             }
             field[json_array_get_count(json_value_get_array(json_object_get_value(root_object, "mobile")))] = NULL;
             person->mobile = field;
@@ -113,7 +113,7 @@ Person* json_string_to_person (char* json_string){
         if (strcmp(json_object_get_name(root_object, i), "fax") == 0){
             char **field = size_t_alloc_mem(json_array_get_count(json_value_get_array(json_object_get_value(root_object, "fax")))+1);
             for (size_t j = 0; j < json_array_get_count(json_value_get_array(json_object_get_value(root_object, "fax"))); j++){
-                field[j] = strdup(json_array_get_string(json_value_get_array(json_object_get_value(root_object, "fax")), j));
+                strcpy(field[j], json_array_get_string(json_value_get_array(json_object_get_value(root_object, "fax")), j));
             }
             field[json_array_get_count(json_value_get_array(json_object_get_value(root_object, "fax")))] = NULL;
             person->fax = field;
@@ -121,7 +121,7 @@ Person* json_string_to_person (char* json_string){
         if (strcmp(json_object_get_name(root_object, i), "note") == 0){
             char **field = size_t_alloc_mem(json_array_get_count(json_value_get_array(json_object_get_value(root_object, "note")))+1);
             for (size_t j = 0; j < json_array_get_count(json_value_get_array(json_object_get_value(root_object, "note"))); j++){
-                field[j] = strdup(json_array_get_string(json_value_get_array(json_object_get_value(root_object, "note")), j));
+                strcpy(field[j], json_array_get_string(json_value_get_array(json_object_get_value(root_object, "note")), j));
             }
             field[json_array_get_count(json_value_get_array(json_object_get_value(root_object, "note")))] = NULL;
             person->note = field;

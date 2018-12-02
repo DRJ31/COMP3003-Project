@@ -8,31 +8,90 @@
 #include <sys/socket.h>
 #include <string.h>
 #include "json.h"
+#include "http.h"
 
 #define BUFSIZE 1024
 #define IPBUFSIZE 128
+
+char **path_extract(char *path, int length) 
+{
+  int count = 0, index = 0, start = 1;
+  char **path_value = (char**)malloc(sizeof(char*) * length);
+  for (int i = 0; i < length; i++) {
+    path_value[i] = (char *)malloc(sizeof(char) * BUFSIZE);
+  }
+  for (int i = 1; i < strlen(path); i++) {
+    if (path[i] == '/') {
+      strncpy(path_value[index], path + start, count);
+      path_value[index][count] = '\0';
+      count = 0;
+      puts(path_value[index]);
+      index++;
+      start = i + 1;
+      continue;
+    }
+    count++;
+  }
+  strncpy(path_value[index], path + start, count);
+  path_value[index][count] = '\0';
+  return path_value;
+}
 
 void *client_handler(void *arg)
 {
   char buf[BUFSIZE]; // String for received message
   int cfd = *(int *)arg;
-  int method = 1; // Emulate HttpMethod switch
   Person *person = NULL;
 
   read(cfd, buf, sizeof(buf));
+  enum HttpMethod method = http_extract_request_method(buf);
   switch (method) {
-    case 1: { // GET
+    case HTTP_GET: { 
       int size[4];
+      puts(buf);
+      char **keyword = path_extract(http_extract_request_path(buf), 1);
       JSON_Value *root_value = json_value_init_object();
-      person = get_person(buf, size);
-      char *person_json = person_to_json_string(root_value, person);
+      puts(keyword[0]);
+      person = get_person(keyword[0], size);
+      char *person_json;
+      char *response;
+      if (person == NULL) {
+        person_json = "The person not exist";
+        response = http_response_wrap_message(
+          HTTP_STATUS_NOT_FOUND,
+          (struct HttpHeaders) {
+            .host = NULL,
+            .accept = NULL,
+            .content_type = "application/json",
+            .authorization = NULL,
+          },
+          person_json
+        );
+      }
+      else {
+        person_json = person_to_json_string(root_value, person);
+        Person *new_person = json_string_to_person(person_json);
+        response = http_response_wrap_message(
+          HTTP_STATUS_OK,
+          (struct HttpHeaders) {
+            .host = NULL,
+            .accept = NULL,
+            .content_type = "application/json",
+            .authorization = NULL,
+          },
+          person_json
+        );
+      }
+      puts(response);
       memset(buf, 0, BUFSIZE);
+      strcpy(buf, response);
+      free(response);
       free(root_value);
-      strcpy(buf, person_json);
-      free(person_json);
+      free(keyword);
+      // free(person_json);
       break;
     }
-    case 2: { // POST
+    case HTTP_POST: { 
       person = json_string_to_person(buf);
       int status = insert_info(person);
       memset(buf, 0, BUFSIZE);
@@ -42,7 +101,7 @@ void *client_handler(void *arg)
         strcpy(buf, "Failed");
       break;
     }
-    case 3: { // Login
+    case HTTP_PUT: {
       int status = check_pass("lmy441900", "madoka");
       memset(buf, 0, BUFSIZE);
       if (status)
@@ -55,6 +114,7 @@ void *client_handler(void *arg)
       break;
   }
   write(cfd, buf, strlen(buf));
+  free(person);
   puts("Thread closed");
   pthread_exit(NULL);
 }

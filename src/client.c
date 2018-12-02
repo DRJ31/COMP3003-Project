@@ -98,12 +98,12 @@ Person *client_query(const char *q)
 
   // Send it over socket
   Person *person = NULL;
-  char *msg = msg_transfer(server, port, q);
+  char *msg = msg_transfer(server, port, http);
   if (msg != NULL) {
-    puts(msg);
+    person = json_string_to_person(http_extract_payload(msg));
   }
 
-  g_message("%s: stub, not implemented!", __func__);
+  // g_message("%s: stub, not implemented!", __func__);
 
   // Free unused memory
   free(server_host);
