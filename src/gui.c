@@ -44,7 +44,8 @@ void cb_box_show_change_visual(GtkBuilder *builder)
     gtk_image_set_from_icon_name(GTK_IMAGE(icon_func_left), "document-new", GTK_ICON_SIZE_LARGE_TOOLBAR);
     gtk_image_set_from_icon_name(GTK_IMAGE(icon_func_right), "help-about", GTK_ICON_SIZE_LARGE_TOOLBAR);
 
-    gtk_widget_show(btn_func_left);
+    if (is_logged_in())
+      gtk_widget_show(btn_func_left);
     gtk_widget_show(btn_func_right);
   } else if (strcmp(stack_name, "stackpage_result") == 0) {
     gtk_header_bar_set_title(GTK_HEADER_BAR(headerbar_main), "Result");
@@ -307,6 +308,7 @@ void cb_btn_func_right_clicked(GtkBuilder *builder)
 
 void cb_btn_login_clicked(GtkButton *self, GtkBuilder *builder)
 {
+  GtkWidget *btn_func_left  = GTK_WIDGET(gtk_builder_get_object(builder, "btn_func_left"));
   GtkEntry *entry_username = GTK_ENTRY(gtk_builder_get_object(builder, "entry_username"));
   GtkEntry *entry_password = GTK_ENTRY(gtk_builder_get_object(builder, "entry_password"));
   GtkDialog *dlglogin = GTK_DIALOG(gtk_builder_get_object(builder, "dlglogin"));
@@ -320,6 +322,7 @@ void cb_btn_login_clicked(GtkButton *self, GtkBuilder *builder)
     switch (gtk_dialog_run(dlglogin)) {
       case GTK_RESPONSE_OK:
         pb_login(gtk_entry_get_text(entry_username), gtk_entry_get_text(entry_password));
+        gtk_widget_show(btn_func_left);
 
         gtk_button_set_label(self, "Logout");
         break;
@@ -332,6 +335,7 @@ void cb_btn_login_clicked(GtkButton *self, GtkBuilder *builder)
   } else if (strcmp(label, "Logout") == 0) {
     // ... and here we just pretend to logout
     pb_logout();
+    gtk_widget_hide(btn_func_left);
 
     gtk_button_set_label(self, "Login");
   } else {

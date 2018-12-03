@@ -47,7 +47,6 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
         <property name="show_close_button">True</property>
         <child>
           <object class="GtkButton" id="btn_func_left">
-            <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
             <property name="no_show_all">True</property>
