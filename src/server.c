@@ -92,7 +92,7 @@ void *client_handler(void *arg)
     case HTTP_POST: {
       // Check privilege
       char *authorization_base64 = http_extract_header(buf, HTTP_AUTHORIZATION);
-      char *authorization = g_base64_decode(buf, BUFSIZE);
+      char *authorization = g_base64_decode(authorization_base64, BUFSIZE);
 
       // Magic.
       const char *username = authorization;
@@ -120,7 +120,7 @@ void *client_handler(void *arg)
     case HTTP_PUT: {
       // Check privilege
       // char *authorization_base64 = http_extract_header(buf, HTTP_AUTHORIZATION);
-      // char *authorization = g_base64_decode(buf, BUFSIZE);
+      // char *authorization = g_base64_decode(authorization_base64, BUFSIZE);
 
       // const char *username = authorization;
       // const char *password = g_strstr_len(authorization, strlen(authorization), ":") + 1;
