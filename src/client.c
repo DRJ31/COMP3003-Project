@@ -169,10 +169,10 @@ bool client_add(Person *person)
   bool result = false;
   char *msg = msg_transfer(server, port, http);
 
+  g_message("HTTP response: ===\n%s\n===", msg);
+
   // FIXME: Nonsense response from server.c:97
   if (msg && strcmp(msg, "Success") == 0) {
-    g_message("HTTP response: ===\n%s\n===", msg);
-
     // if (http_extract_response_status(msg) == HTTP_STATUS_NO_CONTENT)
       result = true;
   }
@@ -247,10 +247,10 @@ bool client_edit(const char *name, Person *person)
   bool result = false;
   char *msg = msg_transfer(server, port, http);
 
+  g_message("HTTP response: ===\n%s\n===", msg);
+
   // FIXME: Nonsense response from server.c:106
   if (msg && strcmp(msg, "Success") == 0) {
-    g_message("HTTP response: ===\n%s\n===", msg);
-
     // if (http_extract_response_status(msg) == HTTP_STATUS_NO_CONTENT)
       result = true;
   }
