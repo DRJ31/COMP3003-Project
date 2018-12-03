@@ -46,6 +46,8 @@ void cb_box_show_change_visual(GtkBuilder *builder)
 
     if (is_logged_in())
       gtk_widget_show(btn_func_left);
+    else
+      gtk_widget_hide(btn_func_left);
     gtk_widget_show(btn_func_right);
   } else if (strcmp(stack_name, "stackpage_result") == 0) {
     gtk_header_bar_set_title(GTK_HEADER_BAR(headerbar_main), "Result");
