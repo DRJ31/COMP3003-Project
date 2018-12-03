@@ -103,7 +103,9 @@ void *client_handler(void *arg)
       if (!check_pass(username, password)) {
         char *http = http_response_wrap_message(
           HTTP_STATUS_FORBIDDEN,
-          (struct HttpHeaders) {},
+          (struct HttpHeaders) {
+            .host = NULL,
+          },
           NULL
         );
         strncpy(buf, http, BUFSIZE);
@@ -134,7 +136,9 @@ void *client_handler(void *arg)
       // if (!check_pass(username, password)) {
         char *http = http_response_wrap_message(
           HTTP_STATUS_FORBIDDEN,
-          (struct HttpHeaders) {},
+          (struct HttpHeaders) {
+            .host = NULL,
+          },
           NULL
         );
         strncpy(buf, http, BUFSIZE);
