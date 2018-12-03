@@ -65,7 +65,7 @@ int connect_mysql(MYSQL *mysql)
         return FALSE;
     }
 
-    if (!mysql_real_connect(mysql, "sql.drj.app", "demonist", "APTX4869", "phonebook", 0, NULL, 0)) {
+    if (!mysql_real_connect(mysql, "127.0.0.1", "demonist", "008691", "phonebook", 0, NULL, 0)) {
         fprintf(stderr, "Mysql connection error!\n");
         return FALSE;
     }
