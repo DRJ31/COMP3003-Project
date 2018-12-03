@@ -771,7 +771,7 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
               <object class="GtkLabel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Early Acces (0.1-pre-alpha)</property>
+                <property name="label" translatable="yes">Early Access (0.1-beta)</property>
                 <attributes>
                   <attribute name="scale" value="1"/>
                   <attribute name="foreground" value="#bababdbdb6b6"/>
