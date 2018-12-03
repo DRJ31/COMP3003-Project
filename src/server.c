@@ -97,8 +97,8 @@ void *client_handler(void *arg)
       char *authorization = g_base64_decode(authorization_base64, &authorization_size);
 
       // Magic.
-      const char *username = authorization;
       const char *password = g_strstr_len(authorization, strlen(authorization), ":") + 1;
+      char *username = g_strndup(authorization, (size_t)(password - 1 - authorization));
 
       if (!check_pass(username, password)) {
         char *http = http_response_wrap_message(
@@ -110,6 +110,8 @@ void *client_handler(void *arg)
         );
         strncpy(buf, http, BUFSIZE);
         free(http);
+        free(username);
+        break;
       }
 
       person = json_string_to_person(http_extract_payload(buf));
@@ -128,8 +130,8 @@ void *client_handler(void *arg)
       // // XXX: Assuming g_base64_decode returning a NULL-terminated string
       // char *authorization = g_base64_decode(authorization_base64, &authorization_size);
 
-      // const char *username = authorization;
       // const char *password = g_strstr_len(authorization, strlen(authorization), ":") + 1;
+      // char *username = g_strndup(authorization, (size_t)(password - 1 - authorization));
 
       g_message("%s:%d %s: not implemented!", __FILE__, __LINE__, __func__);
 
@@ -143,6 +145,8 @@ void *client_handler(void *arg)
         );
         strncpy(buf, http, BUFSIZE);
         free(http);
+        // free(username);
+        break;
       // }
     }
     default:
