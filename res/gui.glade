@@ -68,7 +68,7 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <signal name="clicked" handler="cb_btn_login_clicked" object="dlglogin" swapped="no"/>
+            <signal name="clicked" handler="cb_btn_login_clicked" swapped="no"/>
           </object>
           <packing>
             <property name="pack_type">end</property>
@@ -977,7 +977,7 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
               </packing>
             </child>
             <child>
-              <object class="GtkEntry">
+              <object class="GtkEntry" id="entry_username">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="margin_left">12</property>
@@ -1006,7 +1006,7 @@ Author: Minyong Li <l630003027@mail.uic.edu.hk>
               </packing>
             </child>
             <child>
-              <object class="GtkEntry">
+              <object class="GtkEntry" id="entry_password">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="margin_left">12</property>

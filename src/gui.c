@@ -1,4 +1,5 @@
 #include <gtk/gtk.h>
+#include "login.h"
 #include "client.h"
 
 /*
@@ -298,8 +299,12 @@ void cb_btn_func_right_clicked(GtkBuilder *builder)
   }
 }
 
-void cb_btn_login_clicked(GtkButton *self, GtkDialog *dlglogin)
+void cb_btn_login_clicked(GtkButton *self, GtkBuilder *builder)
 {
+  GtkEntry *entry_username = GTK_ENTRY(gtk_builder_get_object(builder, "entry_username"));
+  GtkEntry *entry_password = GTK_ENTRY(gtk_builder_get_object(builder, "entry_password"));
+  GtkDialog *dlglogin = GTK_DIALOG(gtk_builder_get_object(builder, "dlglogin"));
+
   const char *label = gtk_button_get_label(self);
 
   if (strcmp(label, "Login") == 0) {
@@ -308,6 +313,8 @@ void cb_btn_login_clicked(GtkButton *self, GtkDialog *dlglogin)
 
     switch (gtk_dialog_run(dlglogin)) {
       case GTK_RESPONSE_OK:
+        pb_login(gtk_entry_get_text(entry_username), gtk_entry_get_text(entry_password));
+
         gtk_button_set_label(self, "Logout");
         break;
       default:
@@ -318,11 +325,17 @@ void cb_btn_login_clicked(GtkButton *self, GtkDialog *dlglogin)
     gtk_widget_hide(GTK_WIDGET(dlglogin));
   } else if (strcmp(label, "Logout") == 0) {
     // ... and here we just pretend to logout
+    pb_logout();
+
     gtk_button_set_label(self, "Login");
   } else {
     // Something happened
     g_warning("%s: unexpected login button label %s", __func__, label);
   }
+
+  // Clear the entries
+  gtk_entry_set_text(entry_username, "");
+  gtk_entry_set_text(entry_password, "");
 }
 
 void update_result_page(GtkBuilder *builder, Person *person)

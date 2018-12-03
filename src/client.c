@@ -1,13 +1,14 @@
 #include <glib.h>
-#include "http.h"
-#include "json.h"
-#include "client.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
-#include <string.h>
+#include "http.h"
+#include "json.h"
+#include "login.h"
+#include "client.h"
 
 #define BUFSIZE 1024
 
@@ -86,13 +87,14 @@ Person *client_query(const char *q)
   g_snprintf(server_host, host_size, "%s:%s", server, port);
 
   char *http = http_request_wrap_message(
-      HTTP_GET,
-      path,
-      (struct HttpHeaders){
-          .host = server_host,
-          .accept = "application/json",
-      },
-      NULL);
+    HTTP_GET,
+    path,
+    (struct HttpHeaders) {
+        .host = server_host,
+        .accept = "application/json",
+    },
+    NULL
+  );
 
   g_message("HTTP request: ===\n%s\n===", http);
 
@@ -101,12 +103,13 @@ Person *client_query(const char *q)
   char *msg = msg_transfer(server, port, http);
   if (msg != NULL) {
     g_message("HTTP response: ===\n%s\n===", msg);
-    person = json_string_to_person(http_extract_payload(msg));
+
+    if (http_extract_response_status(msg) == HTTP_STATUS_OK)
+      person = json_string_to_person(http_extract_payload(msg));
   }
 
-  // g_message("%s: stub, not implemented!", __func__);
-
   // Free unused memory
+  free(msg);
   free(server_host);
   free(http);
   free(path);
@@ -139,27 +142,47 @@ bool client_add(Person *person)
   char *server_host = g_malloc(host_size);
   g_snprintf(server_host, host_size, "%s:%s", server, port);
 
+  // Construct the "Authorization:" HTTP header content
+  const char *username = get_username();
+  const char *password = get_password();
+
+  size_t authorization_size = strlen(username) + strlen(":") + strlen(password) + 1; // + 1 NUL
+  char *authorizaion = g_malloc(authorization_size);
+  g_snprintf(authorizaion, authorization_size, "%s:%s", username, password);
+
+  char *authorizaion_base64 = g_base64_encode(authorizaion, authorization_size);
+
   char *http = http_request_wrap_message(
-      HTTP_POST,
-      "/add",
-      (struct HttpHeaders){
-          .host = server_host,
-          .content_type = "application/json"},
-      json);
+    HTTP_POST,
+    "/add",
+    (struct HttpHeaders) {
+        .host = server_host,
+        .content_type = "application/json",
+        .authorization = authorizaion_base64,
+      },
+    json
+  );
 
   g_message("HTTP request: ===\n%s\n===", http);
 
   // Send it over socket
   bool result = false;
   char *msg = msg_transfer(server, port, http);
+
+  // FIXME: Nonsense response from server.c:97
   if (strcmp(msg, "Success") == 0) {
     g_message("HTTP response: ===\n%s\n===", msg);
-    result = true;
+
+    // if (http_extract_response_status(msg) == HTTP_STATUS_NO_CONTENT)
+      result = true;
   }
 
   // Free unused memory
-  free(http);
+  free(msg);
+  free(authorizaion_base64);
   free(server_host);
+  free(http);
+  free(authorizaion);
   free(json);
 
   return result;
@@ -197,19 +220,40 @@ bool client_edit(const char *name, Person *person)
   char *server_host = g_malloc(host_size);
   g_snprintf(server_host, host_size, "%s:%s", server, port);
 
+  // Construct the "Authorization:" HTTP header content
+  const char *username = get_username();
+  const char *password = get_password();
+
+  size_t authorization_size = strlen(username) + strlen(":") + strlen(password) + 1; // + 1 NUL
+  char *authorizaion = g_malloc(authorization_size);
+  g_snprintf(authorizaion, authorization_size, "%s:%s", username, password);
+
+  char *authorizaion_base64 = g_base64_encode(authorizaion, authorization_size);
+
   char *http = http_request_wrap_message(
-      HTTP_POST,
-      path,
-      (struct HttpHeaders){
-          .host = server_host,
-          .content_type = "application/json"},
-      json);
+    HTTP_POST,
+    path,
+    (struct HttpHeaders) {
+        .host = server_host,
+        .content_type = "application/json",
+        .authorization = authorizaion_base64,
+    },
+    json
+  );
 
   g_message("HTTP request: ===\n%s\n===", http);
 
   // Send it over socket
-  // TODO
   bool result = false;
+  char *msg = msg_transfer(server, port, http);
+
+  // FIXME: Nonsense response from server.c:106
+  if (strcmp(msg, "Success") == 0) {
+    g_message("HTTP response: ===\n%s\n===", msg);
+
+    // if (http_extract_response_status(msg) == HTTP_STATUS_NO_CONTENT)
+      result = true;
+  }
 
   g_message("%s: stub, not implemented!", __func__);
 
