@@ -1,19 +1,19 @@
 #include <stdio.h>
-#include "glib.h"
-#include <sys/types.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <pthread.h>
 #include <stdlib.h>
-#include <sys/socket.h>
 #include <string.h>
+#include <unistd.h>
+#include <glib.h>
+#include <pthread.h>
+#include <sys/types.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
 #include "json.h"
 #include "http.h"
 
 #define BUFSIZE 1024
 #define IPBUFSIZE 128
 
-char **path_extract(char *path, int length) 
+char **path_extract(char *path, int length)
 {
   int count = 0, index = 0, start = 1;
   char **path_value = (char**)malloc(sizeof(char*) * length);
@@ -46,7 +46,7 @@ void *client_handler(void *arg)
   read(cfd, buf, sizeof(buf));
   enum HttpMethod method = http_extract_request_method(buf);
   switch (method) {
-    case HTTP_GET: { 
+    case HTTP_GET: {
       int size[4];
       puts(buf);
       char **keyword = path_extract(http_extract_request_path(buf), 1);
@@ -89,7 +89,25 @@ void *client_handler(void *arg)
       // free(person_json);
       break;
     }
-    case HTTP_POST: { 
+    case HTTP_POST: {
+      // Check privilege
+      char *authorization_base64 = http_extract_header(buf, HTTP_AUTHORIZATION);
+      char *authorization = g_base64_decode(buf, BUFSIZE);
+
+      // Magic.
+      const char *username = authorization;
+      const char *password = g_strstr_len(authorization, strlen(authorization), ":") + 1;
+
+      if (!check_pass(username, password)) {
+        char *http = http_response_wrap_message(
+          HTTP_STATUS_FORBIDDEN,
+          (struct HttpHeaders) {},
+          NULL
+        );
+        strncpy(buf, http, BUFSIZE);
+        free(http);
+      }
+
       person = json_string_to_person(http_extract_payload(buf));
       int status = insert_info(person);
       memset(buf, 0, BUFSIZE);
@@ -100,13 +118,24 @@ void *client_handler(void *arg)
       break;
     }
     case HTTP_PUT: {
-      int status = check_pass("lmy441900", "madoka");
-      memset(buf, 0, BUFSIZE);
-      if (status)
-        strcpy(buf, "Success");
-      else
-        strcpy(buf, "Failed");
-      break;
+      // Check privilege
+      // char *authorization_base64 = http_extract_header(buf, HTTP_AUTHORIZATION);
+      // char *authorization = g_base64_decode(buf, BUFSIZE);
+
+      // const char *username = authorization;
+      // const char *password = g_strstr_len(authorization, strlen(authorization), ":") + 1;
+
+      g_message("%s:%d %s: not implemented!", __FILE__, __LINE__, __func__);
+
+      // if (!check_pass(username, password)) {
+        char *http = http_response_wrap_message(
+          HTTP_STATUS_FORBIDDEN,
+          (struct HttpHeaders) {},
+          NULL
+        );
+        strncpy(buf, http, BUFSIZE);
+        free(http);
+      // }
     }
     default:
       break;
