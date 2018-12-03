@@ -195,16 +195,19 @@ gboolean update_visual_elements_on_submission(gpointer data)
   if (ret) {
     // Widget to operate on
     GtkWidget *headerbar_main = GTK_WIDGET(gtk_builder_get_object(elements->builder, "headerbar_main"));
+    GtkWidget *btn_func_right = GTK_WIDGET(gtk_builder_get_object(elements->builder, "btn_func_right"));
 
     if (*ret == TRUE) {
       // Update succeeded
       gtk_header_bar_set_title(GTK_HEADER_BAR(headerbar_main), "Success on update.");
+      gtk_widget_set_sensitive(btn_func_right, TRUE);
 
       g_free(elements);
       return FALSE;
     } else {
       // Update failed
       gtk_header_bar_set_title(GTK_HEADER_BAR(headerbar_main), "Failed to update! Please try again...");
+      gtk_widget_set_sensitive(btn_func_right, TRUE);
 
       g_free(elements);
       return FALSE;
@@ -269,7 +272,10 @@ void cb_btn_func_right_clicked(GtkBuilder *builder)
   } else if (strcmp(stack_name, "stackpage_editor") == 0) {
     // Change header bar title to indicate process
     GtkWidget *headerbar_main = GTK_WIDGET(gtk_builder_get_object(builder, "headerbar_main"));
+    GtkWidget *btn_func_right = GTK_WIDGET(gtk_builder_get_object(builder, "btn_func_right"));
+
     gtk_header_bar_set_title(GTK_HEADER_BAR(headerbar_main), "Submitting...");
+    gtk_widget_set_sensitive(btn_func_right, FALSE);
 
     // Collect information in editor
     Person *person = editor_collect(builder);
