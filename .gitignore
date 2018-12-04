@@ -6,6 +6,7 @@
 
 # Exceptions
 !Makefile
+!COPYING
 
 # Directories
 .idea/
