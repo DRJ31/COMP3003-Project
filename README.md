@@ -1,6 +1,6 @@
-# COMP3003-Project
+# COMP3003-Project: Phone Book
 
-This is a course project of COMP3003: Data Communications and Networking in BNU-HKBU UIC.
+This is a course project of COMP3003: Data Communications and Networking in BNU-HKBU UIC, an online yellow page for a user to query information of someone from the phone book server through a dedicated client.
 
 ## Build
 
